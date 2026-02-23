@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --gold: #c4a35a;
+  --gold-light: #d4b86a;
+  --gold-dark: #9a7d3a;
+  --silver: #c0c0c0;
+  --silver-light: #d4d4d4;
+  --silver-dark: #9a9a9a;
+  --muted: rgba(255, 255, 255, 0.5);
+}
+
+/* Reset Tailwind defaults that might override our styles */
+h1, h2, h3, h4, h5, h6, p, span, a {
+  color: inherit;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(196, 163, 90, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(196, 163, 90, 0.5);
+}
+
+/* Selection */
+::selection {
+  background: rgba(196, 163, 90, 0.4);
+  color: #fff;
+}
+
+/* Show default cursor on touch devices */
+@media (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+}
+
+/* Hide cursor on interactive elements */
+a, button, .interactive {
+  cursor: none;
+}
+
+@media (pointer: coarse) {
+  a, button, .interactive {
+    cursor: pointer;
+  }
+}
+
+/* Smooth transitions for links */
+a {
+  transition: color 0.3s ease;
+}
+
+/* ===== FLUID CURSOR - HIDE ON TOUCH ===== */
+@media (pointer: coarse) {
+  .fluid-cursor {
+    display: none !important;
+  }
+}
+
+/* ===== ANIMATIONS - REDUCE MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ===== SCROLLBAR UTILITIES ===== */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.tech-scroll::-webkit-scrollbar { width: 4px; }
+.tech-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+.tech-scroll::-webkit-scrollbar-thumb { background: rgba(196, 163, 90, 0.3); border-radius: 2px; }
+
+/* ===== SAFE AREAS FOR NOTCHED DEVICES ===== */
+@supports (padding: max(0px)) {
+  .mobile-nav {
+    padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  }
+}
