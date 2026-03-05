@@ -1,104 +1,114 @@
 /**
- * Global type definitions for the portfolio application
+ * Global Type Definitions
+ * 
+ * Centralized TypeScript types for the portfolio application.
+ * Following FAANG best practices for type organization and documentation.
+ * 
+ * @module types
  */
 
-// Theme types
+// =============================================================================
+// THEME TYPES
+// =============================================================================
+
+/** Available theme modes */
 export type Theme = 'dark' | 'light';
 
+/** Color palette structure used by both themes */
 export interface ThemeColors {
-  background: string;
-  backgroundSecondary: string;
-  backgroundGradient: string;
-  text: string;
-  textSecondary: string;
-  textMuted: string;
-  gold: string;
-  goldMuted: string;
-  silver: string;
-  border: string;
-  borderHover: string;
-  cardBg: string;
-  cardBgHover: string;
+  readonly background: string;
+  readonly backgroundSecondary: string;
+  readonly backgroundGradient: string;
+  readonly text: string;
+  readonly textSecondary: string;
+  readonly textMuted: string;
+  readonly gold: string;
+  readonly goldMuted: string;
+  readonly silver: string;
+  readonly border: string;
+  readonly borderHover: string;
+  readonly cardBg: string;
+  readonly cardBgHover: string;
 }
 
+/** Theme context interface for React context */
 export interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-  colors: ThemeColors;
+  readonly theme: Theme;
+  readonly toggleTheme: () => void;
+  readonly colors: ThemeColors;
 }
 
-// Animation types
+// =============================================================================
+// ANIMATION TYPES
+// =============================================================================
+
+/** Supported animation directions for section transitions */
 export type AnimationDirection = 'left' | 'right' | 'top' | 'bottom' | 'center';
 
+/** Animation offset coordinates */
 export interface AnimationOffset {
-  x: number;
-  y: number;
+  readonly x: number;
+  readonly y: number;
 }
 
-// Section types
-export interface SectionState {
-  isActive: boolean;
-  isEntering: boolean;
-  isLeaving: boolean;
-  direction: 'up' | 'down' | null;
-}
+// =============================================================================
+// DATA MODELS
+// =============================================================================
 
-// Component prop types
-export interface SectionWrapperProps {
-  children: React.ReactNode;
-  id: string;
-  className?: string;
-  style?: React.CSSProperties;
-}
-
-// Data types
+/** Individual skill with proficiency level */
 export interface Skill {
-  name: string;
-  level: number;
+  readonly name: string;
+  readonly level: number;
 }
 
+/** Skill category grouping related skills */
 export interface SkillCategory {
-  title: string;
-  color: string;
-  skills: Skill[];
+  readonly title: string;
+  readonly color: string;
+  readonly skills: readonly Skill[];
 }
 
+/** Technology group for display purposes */
 export interface TechnologyGroup {
-  category: string;
-  color: string;
-  techs: string[];
+  readonly category: string;
+  readonly color: string;
+  readonly techs: readonly string[];
 }
 
+/** Work experience entry */
 export interface Experience {
-  role: string;
-  company: string;
-  period: string;
-  location: string;
-  description: string[];
-  skills: string[];
+  readonly role: string;
+  readonly company: string;
+  readonly period: string;
+  readonly location: string;
+  readonly description: readonly string[];
+  readonly skills: readonly string[];
 }
 
+/** Project portfolio entry */
 export interface Project {
-  title: string;
-  description: string;
-  tech: string[];
-  category: string;
-  highlight?: string;
-  links: {
-    github?: string;
-    live?: string;
+  readonly title: string;
+  readonly description: string;
+  readonly tech: readonly string[];
+  readonly category: string;
+  readonly highlight?: string;
+  readonly links: {
+    readonly github?: string;
+    readonly live?: string;
   };
 }
 
+/** Contact link with icon */
 export interface ContactLink {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  href: string;
+  readonly icon: React.ReactNode;
+  readonly label: string;
+  readonly value: string;
+  readonly href: string;
 }
 
+/** Navigation item */
 export interface NavItem {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
+  readonly id: string;
+  readonly label: string;
+  readonly icon: React.ReactNode;
 }

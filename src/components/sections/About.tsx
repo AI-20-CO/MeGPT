@@ -24,17 +24,13 @@ export default function About() {
       ref={ref}
       style={{
         minHeight: '100vh',
-        padding: '80px 24px',
+        padding: 'clamp(60px, 10vw, 80px) clamp(16px, 4vw, 24px)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         boxSizing: 'border-box',
         position: 'relative',
         overflow: 'hidden',
-        background: theme === 'dark'
-          ? 'linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 50%, #0a0a0a 100%)'
-          : 'linear-gradient(180deg, #fafafa 0%, #f5f5f5 50%, #fafafa 100%)',
-        transition: 'background 0.3s ease',
       }}
     >
       {/* Dynamic background orbs */}
@@ -97,7 +93,7 @@ export default function About() {
               fontSize: 'clamp(10px, 2vw, 11px)',
               letterSpacing: '4px',
               textTransform: 'uppercase',
-              color: theme === 'dark' ? 'rgba(196, 163, 90, 0.6)' : 'rgba(13, 148, 136, 0.7)',
+              color: theme === 'dark' ? 'rgba(196, 163, 90, 0.6)' : 'rgba(168, 85, 247, 0.8)',
               display: 'block',
               marginBottom: '16px',
             }}
@@ -139,10 +135,10 @@ export default function About() {
               borderRadius: '20px',
               background: theme === 'dark'
                 ? 'linear-gradient(145deg, rgba(196, 163, 90, 0.04) 0%, rgba(192, 192, 192, 0.02) 100%)'
-                : 'linear-gradient(145deg, rgba(13, 148, 136, 0.06) 0%, rgba(100, 100, 100, 0.03) 100%)',
+                : 'linear-gradient(145deg, rgba(168, 85, 247, 0.08) 0%, rgba(34, 211, 238, 0.04) 100%)',
               border: theme === 'dark'
                 ? '1px solid rgba(196, 163, 90, 0.1)'
-                : '1px solid rgba(13, 148, 136, 0.15)',
+                : '1px solid rgba(168, 85, 247, 0.2)',
             }}
           >
             <motion.div style={{ y: parallaxY }}>
@@ -250,7 +246,7 @@ export default function About() {
                 marginTop: '16px',
                 padding: '6px 12px',
                 borderRadius: '8px',
-                background: theme === 'dark' ? 'rgba(196, 163, 90, 0.1)' : 'rgba(13, 148, 136, 0.1)',
+                background: theme === 'dark' ? 'rgba(196, 163, 90, 0.2)' : 'rgba(13, 148, 136, 0.2)',
               }}
             >
               <div

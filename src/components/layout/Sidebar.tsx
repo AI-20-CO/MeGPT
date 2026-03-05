@@ -158,14 +158,14 @@ export default function Sidebar() {
               borderRadius: '16px',
               background: theme === 'dark' 
                 ? 'linear-gradient(145deg, rgba(30, 30, 35, 0.95) 0%, rgba(25, 25, 30, 0.9) 100%)'
-                : 'linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 245, 0.9) 100%)',
+                : 'linear-gradient(145deg, rgba(20, 15, 30, 0.95) 0%, rgba(15, 10, 25, 0.9) 100%)',
               border: theme === 'dark'
                 ? '1px solid rgba(196, 163, 90, 0.15)'
-                : '1px solid rgba(0, 0, 0, 0.08)',
+                : '1px solid rgba(168, 85, 247, 0.25)',
               backdropFilter: 'blur(20px)',
               boxShadow: theme === 'dark'
                 ? '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-                : '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+                : '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(168, 85, 247, 0.1)',
               overflow: 'hidden',
               transition: 'background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease',
             }}
@@ -192,11 +192,7 @@ export default function Sidebar() {
                     textDecoration: 'none',
                     letterSpacing: '0.3px',
                     transition: 'color 0.2s ease, background 0.2s ease',
-                    background: isActive 
-                      ? `${colors.gold}20` 
-                      : hoveredIndex === index 
-                        ? `${colors.gold}15` 
-                        : 'transparent',
+                    background: 'transparent',
                     whiteSpace: 'nowrap',
                   }}
                   className="interactive"
@@ -308,10 +304,10 @@ export default function Sidebar() {
             paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
             background: theme === 'dark'
               ? 'linear-gradient(to top, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.95) 100%)'
-              : 'linear-gradient(to top, rgba(250, 250, 250, 0.98) 0%, rgba(250, 250, 250, 0.95) 100%)',
+              : 'linear-gradient(to top, rgba(15, 10, 25, 0.98) 0%, rgba(10, 5, 20, 0.95) 100%)',
             borderTop: theme === 'dark'
               ? '1px solid rgba(196, 163, 90, 0.15)'
-              : '1px solid rgba(0, 0, 0, 0.08)',
+              : '1px solid rgba(168, 85, 247, 0.25)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             display: 'flex',

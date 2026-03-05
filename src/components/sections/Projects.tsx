@@ -92,17 +92,13 @@ export default function Projects() {
       ref={ref}
       style={{
         minHeight: '100vh',
-        padding: '80px 24px',
+        padding: 'clamp(60px, 10vw, 80px) clamp(16px, 4vw, 24px)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
-        background: theme === 'dark'
-          ? 'linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 50%, #0a0a0a 100%)'
-          : 'linear-gradient(180deg, #fafafa 0%, #f5f5f5 50%, #fafafa 100%)',
-        transition: 'background 0.3s ease',
       }}
     >
       {/* Dynamic background orbs - same as About */}
@@ -160,24 +156,11 @@ export default function Projects() {
           animate={isInView ? 'visible' : 'hidden'}
           style={{ marginBottom: '40px' }}
         >
-          <motion.span
-            initial={{ width: 0 }}
-            animate={isInView ? { width: '40px' } : { width: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            style={{
-              display: 'block',
-              height: '2px',
-              background: theme === 'dark' 
-                ? 'linear-gradient(90deg, #c4a35a, transparent)'
-                : 'linear-gradient(90deg, #0d9488, transparent)',
-              marginBottom: '16px',
-            }}
-          />
           <span style={{
             fontSize: '12px',
             letterSpacing: '4px',
             textTransform: 'uppercase',
-            color: theme === 'dark' ? 'rgba(196, 163, 90, 0.6)' : 'rgba(13, 148, 136, 0.7)',
+            color: theme === 'dark' ? 'rgba(196, 163, 90, 0.6)' : 'rgba(168, 85, 247, 0.8)',
             display: 'block',
             marginBottom: '12px',
           }}>
@@ -202,7 +185,6 @@ export default function Projects() {
           animate={isInView ? 'visible' : 'hidden'}
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
             gap: '20px',
           }}
         >
@@ -212,27 +194,24 @@ export default function Projects() {
                 variants={createVariants(index % 2 === 0 ? 'left' : 'right', 60)}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
+                className="project-card"
                 style={{
-                  padding: '24px',
+                  padding: 'clamp(16px, 3vw, 24px)',
                   borderRadius: '16px',
                   boxSizing: 'border-box',
                   background: hoveredIndex === index 
                     ? project.gradient
-                    : theme === 'dark'
-                      ? 'linear-gradient(145deg, rgba(30, 30, 35, 0.6) 0%, rgba(25, 25, 30, 0.4) 100%)'
-                      : 'linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 245, 245, 0.7) 100%)',
+                    : 'linear-gradient(145deg, rgba(30, 30, 35, 0.95) 0%, rgba(25, 25, 30, 0.9) 100%)',
                   border: hoveredIndex === index 
                     ? theme === 'dark'
                       ? '1px solid rgba(196, 163, 90, 0.3)'
-                      : '1px solid rgba(13, 148, 136, 0.35)'
-                    : theme === 'dark'
-                      ? '1px solid rgba(255, 255, 255, 0.05)'
-                      : '1px solid rgba(0, 0, 0, 0.08)',
+                      : '1px solid rgba(168, 85, 247, 0.35)'
+                    : '1px solid rgba(255, 255, 255, 0.1)',
                   position: 'relative',
                   overflow: 'hidden',
                   transition: 'all 0.4s ease',
                   cursor: 'pointer',
-                  boxShadow: theme === 'light' ? '0 2px 8px rgba(0, 0, 0, 0.04)' : 'none',
+                  boxShadow: 'none',
                 }}
               >
                 {/* Shine effect */}
@@ -274,10 +253,10 @@ export default function Projects() {
                     <span style={{
                       padding: '4px 10px',
                       borderRadius: '6px',
-                      background: theme === 'dark' ? 'rgba(196, 163, 90, 0.15)' : 'rgba(13, 148, 136, 0.12)',
+                      background: theme === 'dark' ? 'rgba(196, 163, 90, 0.25)' : 'rgba(168, 85, 247, 0.25)',
                       border: theme === 'dark' 
-                        ? '1px solid rgba(196, 163, 90, 0.3)'
-                        : '1px solid rgba(13, 148, 136, 0.25)',
+                        ? '1px solid rgba(196, 163, 90, 0.4)'
+                        : '1px solid rgba(168, 85, 247, 0.4)',
                       fontSize: '10px',
                       fontWeight: 600,
                       color: colors.gold,
@@ -325,10 +304,10 @@ export default function Projects() {
                       style={{
                         padding: '5px 10px',
                         borderRadius: '6px',
-                        background: theme === 'dark' ? 'rgba(196, 163, 90, 0.1)' : 'rgba(13, 148, 136, 0.1)',
+                        background: theme === 'dark' ? 'rgba(196, 163, 90, 0.2)' : 'rgba(13, 148, 136, 0.2)',
                         border: theme === 'dark' 
-                          ? '1px solid rgba(196, 163, 90, 0.2)'
-                          : '1px solid rgba(13, 148, 136, 0.2)',
+                          ? '1px solid rgba(196, 163, 90, 0.3)'
+                          : '1px solid rgba(13, 148, 136, 0.3)',
                         fontSize: '12px',
                         color: colors.gold,
                         letterSpacing: '0.3px',
@@ -341,7 +320,7 @@ export default function Projects() {
                     <span style={{
                       padding: '5px 10px',
                       borderRadius: '6px',
-                      background: theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                      background: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
                       fontSize: '12px',
                       color: colors.textMuted,
                     }}>

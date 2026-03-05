@@ -135,6 +135,7 @@ export default function FluidCursor() {
             height: 8,
             borderRadius: '50%',
             backgroundColor: theme === 'dark' ? '#fff' : '#1a1a1a',
+            border: theme === 'dark' ? 'none' : '1px solid rgba(150, 150, 150, 0.5)',
             scaleX,
             scaleY,
           }}
@@ -165,10 +166,10 @@ export default function FluidCursor() {
             borderRadius: '50%',
             border: theme === 'dark' 
               ? '1px solid rgba(255, 255, 255, 0.5)' 
-              : '1px solid rgba(0, 0, 0, 0.3)',
+              : '1px solid rgba(180, 180, 180, 0.8)',
             background: theme === 'dark' 
               ? 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)'
-              : 'radial-gradient(circle, rgba(0,0,0,0.03) 0%, transparent 70%)',
+              : 'radial-gradient(circle, rgba(100,100,100,0.1) 0%, transparent 70%)',
           }}
         />
       </motion.div>

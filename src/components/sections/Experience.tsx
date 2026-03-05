@@ -40,17 +40,13 @@ export default function Experience() {
       ref={ref}
       style={{
         minHeight: '100vh',
-        padding: '80px 24px',
+        padding: 'clamp(60px, 10vw, 80px) clamp(16px, 4vw, 24px)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         boxSizing: 'border-box',
         position: 'relative',
         overflow: 'hidden',
-        background: theme === 'dark'
-          ? 'linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 50%, #0a0a0a 100%)'
-          : 'linear-gradient(180deg, #fafafa 0%, #f5f5f5 50%, #fafafa 100%)',
-        transition: 'background 0.3s ease',
       }}
     >
       {/* Dynamic background orbs - same as About */}
@@ -160,20 +156,6 @@ export default function Experience() {
                 overflow: 'hidden',
               }}
             >
-              {/* Decorative gradient line */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '2px',
-                  background: theme === 'dark'
-                    ? 'linear-gradient(90deg, transparent, rgba(196, 163, 90, 0.5), transparent)'
-                    : 'linear-gradient(90deg, transparent, rgba(13, 148, 136, 0.4), transparent)',
-                }}
-              />
-
               {/* Left column - Role info */}
               <div>
                 <h3

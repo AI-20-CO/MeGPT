@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
+import { Orb } from '@/components/ui';
 
 // Animated text that reveals character by character
 const AnimatedText = ({ text, delay = 0, className = '', color }: { text: string; delay?: number; className?: string; color?: string }) => {
@@ -93,7 +94,6 @@ export default function Hero() {
   // Orb parallax
   const orbY1 = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const orbY2 = useTransform(scrollYProgress, [0, 1], [0, -300]);
-  const orbScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.5]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -121,53 +121,52 @@ export default function Hero() {
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-        padding: '0 24px',
-        overflow: 'hidden',
-        background: colors.background,
+        padding: '0 clamp(16px, 4vw, 24px)',
+        overflowX: 'clip',
+        overflowY: 'visible',
         transition: 'background 0.5s ease',
       }}
     >
-      {/* Animated gradient mesh background */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: theme === 'dark' 
-            ? `
-              radial-gradient(ellipse at 30% 20%, rgba(196, 163, 90, 0.12) 0%, transparent 50%),
-              radial-gradient(ellipse at 70% 80%, rgba(192, 192, 192, 0.08) 0%, transparent 40%),
-              radial-gradient(ellipse at 50% 50%, rgba(196, 163, 90, 0.05) 0%, transparent 60%)
-            `
-            : `
-              radial-gradient(ellipse at 30% 20%, rgba(13, 148, 136, 0.015) 0%, transparent 50%),
-              radial-gradient(ellipse at 70% 80%, rgba(100, 150, 150, 0.01) 0%, transparent 40%),
-              radial-gradient(ellipse at 50% 50%, rgba(13, 148, 136, 0.008) 0%, transparent 60%)
-            `,
-          y: orbY1,
-        }}
-      />
-
       {/* Floating particles */}
       {particles.map((i) => (
         <Particle key={i} delay={i * 0.5} theme={theme} index={i} />
       ))}
 
-      {/* Interactive orbs that respond to mouse */}
+      {/* Interactive WebGL Orb - Centered behind text, extends into next section */}
+      <div
+        className="hero-orb"
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'auto',
+          zIndex: 0,
+        }}
+      >
+        <Orb
+          hue={theme === 'dark' ? 220 : 0}
+          hoverIntensity={1.5}
+          rotateOnHover={true}
+          backgroundColor="#0a0a0a"
+        />
+      </div>
+
+      {/* Gradient orb accents */}
       <motion.div
         style={{
           position: 'absolute',
           top: '15%',
-          right: '20%',
-          width: 'clamp(250px, 35vw, 450px)',
-          height: 'clamp(250px, 35vw, 450px)',
+          right: '15%',
+          width: 'clamp(200px, 30vw, 350px)',
+          height: 'clamp(200px, 30vw, 350px)',
           borderRadius: '50%',
           background: theme === 'dark'
-            ? 'radial-gradient(circle, rgba(196, 163, 90, 0.1) 0%, rgba(196, 163, 90, 0.03) 40%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(13, 148, 136, 0.015) 0%, rgba(13, 148, 136, 0.005) 40%, transparent 70%)',
+            ? 'radial-gradient(circle, rgba(196, 163, 90, 0.08) 0%, transparent 60%)'
+            : 'radial-gradient(circle, rgba(217, 70, 239, 0.06) 0%, transparent 60%)',
           filter: 'blur(60px)',
           pointerEvents: 'none',
           y: orbY1,
-          scale: orbScale,
           x: smoothMouseX,
         }}
         animate={{
@@ -180,6 +179,7 @@ export default function Hero() {
         }}
       />
 
+      {/* Secondary gradient orb */}
       <motion.div
         style={{
           position: 'absolute',
@@ -190,7 +190,7 @@ export default function Hero() {
           borderRadius: '50%',
           background: theme === 'dark'
             ? 'radial-gradient(circle, rgba(192, 192, 192, 0.08) 0%, transparent 60%)'
-            : 'radial-gradient(circle, rgba(100, 100, 100, 0.05) 0%, transparent 60%)',
+            : 'radial-gradient(circle, rgba(217, 70, 239, 0.08) 0%, transparent 60%)',
           filter: 'blur(50px)',
           pointerEvents: 'none',
           y: orbY2,
@@ -237,6 +237,8 @@ export default function Hero() {
           flexDirection: 'column',
           alignItems: 'center',
           textAlign: 'center',
+          position: 'relative',
+          zIndex: 1,
           opacity,
           scale,
           rotateX: smoothMouseY,
@@ -344,18 +346,7 @@ export default function Hero() {
             fontWeight: 300,
           }}
         >
-          Crafting scalable solutions and modern digital experiences.
-          <br />
-          Currently building impactful software at{' '}
-          <motion.span
-            style={{ color: colors.gold }}
-            whileHover={{ textShadow: theme === 'dark' 
-              ? '0 0 20px rgba(196, 163, 90, 0.5)'
-              : '0 0 20px rgba(13, 148, 136, 0.4)' 
-            }}
-          >
-            Experian PLC
-          </motion.span>
+          I like turning complex problems into elegant code and pixels into experiences people actually enjoy using.
         </motion.p>
 
         {/* CTA buttons with magnetic hover */}
