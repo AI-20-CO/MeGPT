@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
-import { createVariants, containerVariants } from '@/utils/animations';
+import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
 
 // Animated line component
 function AnimatedLine({ delay, theme }: { delay: number; theme: string }) {
@@ -19,7 +19,7 @@ function AnimatedLine({ delay, theme }: { delay: number; theme: string }) {
         width: '100%',
         background: theme === 'dark' 
           ? 'linear-gradient(90deg, transparent, rgba(196, 163, 90, 0.3), transparent)'
-          : 'linear-gradient(90deg, transparent, rgba(13, 148, 136, 0.2), transparent)',
+          : 'linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.3), transparent)',
         transformOrigin: 'center',
       }}
     />
@@ -97,15 +97,13 @@ export default function Contact() {
       ref={ref}
       style={{
         minHeight: '100vh',
-        padding: '100px 24px',
+        padding: 'clamp(60px, 12vw, 100px) clamp(16px, 4vw, 24px)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         boxSizing: 'border-box',
         position: 'relative',
         overflow: 'hidden',
-        background: colors.backgroundGradient,
-        transition: 'background 0.5s ease',
       }}
     >
       {/* Dynamic background orbs */}
@@ -138,7 +136,11 @@ export default function Contact() {
         }}
       />
 
-      <motion.div 
+      <motion.div
+        variants={sectionViewportVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ amount: sectionViewportConfig.amount, margin: sectionViewportConfig.margin }}
         style={{ 
           maxWidth: 900, 
           width: '100%', 
@@ -155,17 +157,6 @@ export default function Contact() {
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
         >
-          <motion.span
-            initial={{ width: 0 }}
-            animate={isInView ? { width: '50px' } : { width: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            style={{
-              display: 'block',
-              height: '2px',
-              background: `linear-gradient(90deg, ${colors.gold}, transparent)`,
-              margin: '0 auto 20px auto',
-            }}
-          />
           <span
             style={{
               fontSize: '12px',
@@ -207,7 +198,7 @@ export default function Contact() {
               transition: 'color 0.5s ease',
             }}
           >
-            Currently available for internship opportunities and collaborative projects. 
+            Currently available for opportunities and collaborative projects. 
             Based in Kuala Lumpur, Malaysia.
           </p>
         </motion.div>
@@ -217,9 +208,9 @@ export default function Contact() {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
+          className="contact-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: '16px',
             marginBottom: '60px',
           }}
@@ -235,8 +226,9 @@ export default function Contact() {
               onMouseLeave={() => setHoveredLink(null)}
               whileHover={{ y: -6, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              className="contact-card"
               style={{
-                padding: '24px',
+                padding: 'clamp(16px, 3vw, 24px)',
                 borderRadius: '20px',
                 background: hoveredLink === link.label ? colors.cardBgHover : colors.cardBg,
                 border: `1px solid ${hoveredLink === link.label ? colors.borderHover : colors.border}`,
@@ -259,7 +251,7 @@ export default function Contact() {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  background: `radial-gradient(circle at 50% 0%, ${theme === 'dark' ? 'rgba(196, 163, 90, 0.1)' : 'rgba(13, 148, 136, 0.05)'} 0%, transparent 70%)`,
+                  background: `radial-gradient(circle at 50% 0%, ${theme === 'dark' ? 'rgba(196, 163, 90, 0.2)' : 'rgba(168, 85, 247, 0.2)'} 0%, transparent 70%)`,
                   pointerEvents: 'none',
                 }}
               />

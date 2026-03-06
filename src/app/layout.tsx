@@ -11,6 +11,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Ayaan Izhar | Software Engineer",
   description: "Software Engineer crafting scalable solutions and modern experiences. Currently at Experian PLC.",
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({

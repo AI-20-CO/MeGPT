@@ -4,23 +4,23 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
-import { createVariants, containerVariants } from '@/utils/animations';
+import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
 
-// Skill categories for the animated bars
-const skillCategories = [
+// Theme-aware skill category colors
+const getSkillCategories = (isDark: boolean) => [
   {
     title: 'Languages',
-    color: '#c4a35a',
+    color: isDark ? '#c4a35a' : '#a855f7',
     skills: [
       { name: 'Java', level: 95 },
       { name: 'TypeScript', level: 90 },
-      { name: 'Python', level: 85 },
+      { name: 'Python', level: 95 },
       { name: 'SQL', level: 85 },
     ],
   },
   {
     title: 'Frontend',
-    color: '#61dafb',
+    color: isDark ? '#61dafb' : '#22d3ee',
     skills: [
       { name: 'React', level: 92 },
       { name: 'Next.js', level: 88 },
@@ -30,7 +30,7 @@ const skillCategories = [
   },
   {
     title: 'Backend',
-    color: '#a8c4a0',
+    color: isDark ? '#a8c4a0' : '#4ade80',
     skills: [
       { name: 'Spring Boot', level: 90 },
       { name: 'FastAPI', level: 80 },
@@ -40,7 +40,7 @@ const skillCategories = [
   },
   {
     title: 'Java Enterprise',
-    color: '#e57373',
+    color: isDark ? '#e57373' : '#f472b6',
     skills: [
       { name: 'OSGi', level: 85 },
       { name: 'Hibernate', level: 88 },
@@ -50,7 +50,7 @@ const skillCategories = [
   },
   {
     title: 'Cloud & DevOps',
-    color: '#a0b4c4',
+    color: isDark ? '#a0b4c4' : '#818cf8',
     skills: [
       { name: 'AWS', level: 85 },
       { name: 'Docker', level: 88 },
@@ -60,7 +60,7 @@ const skillCategories = [
   },
   {
     title: 'Databases',
-    color: '#c4a0b4',
+    color: isDark ? '#c4a0b4' : '#e879f9',
     skills: [
       { name: 'PostgreSQL', level: 90 },
       { name: 'MongoDB', level: 82 },
@@ -70,7 +70,7 @@ const skillCategories = [
   },
   {
     title: 'ML & Data',
-    color: '#f7931e',
+    color: isDark ? '#f7931e' : '#fb923c',
     skills: [
       { name: 'PyTorch', level: 75 },
       { name: 'Scikit-learn', level: 80 },
@@ -80,25 +80,24 @@ const skillCategories = [
   },
 ];
 
-// Segregated technologies by category
-const segregatedTechnologies = [
-  { category: 'Languages', techs: ['Java', 'TypeScript', 'JavaScript', 'Python', 'SQL', 'C++'], color: '#c4a35a' },
-  { category: 'Frontend', techs: ['React', 'Next.js', 'React Native', 'Tailwind CSS', 'HTML5', 'CSS3'], color: '#61dafb' },
-  { category: 'Backend', techs: ['Spring Boot', 'FastAPI', 'Node.js', 'Express', 'REST APIs', 'GraphQL'], color: '#a8c4a0' },
-  { category: 'Java Enterprise', techs: ['OSGi', 'Hibernate', 'JPA', 'JAX-RS', 'Maven', 'Gradle'], color: '#e57373' },
-  { category: 'Cloud & DevOps', techs: ['AWS', 'Docker', 'Kubernetes', 'Jenkins', 'CI/CD', 'Linux'], color: '#a0b4c4' },
-  { category: 'Databases', techs: ['PostgreSQL', 'MongoDB', 'Redis', 'MySQL', 'DynamoDB'], color: '#c4a0b4' },
-  { category: 'ML & Data', techs: ['PyTorch', 'Scikit-learn', 'Pandas', 'NumPy', 'OpenAI API'], color: '#f7931e' },
+// Theme-aware segregated technologies
+const getSegregatedTechnologies = (isDark: boolean) => [
+  { category: 'Languages', techs: ['Java', 'TypeScript', 'JavaScript', 'Python', 'SQL', 'C++'], color: isDark ? '#c4a35a' : '#a855f7' },
+  { category: 'Frontend', techs: ['React', 'Next.js', 'React Native', 'Tailwind CSS', 'HTML5', 'CSS3'], color: isDark ? '#61dafb' : '#22d3ee' },
+  { category: 'Backend', techs: ['Spring Boot', 'FastAPI', 'Node.js', 'Express', 'REST APIs', 'GraphQL'], color: isDark ? '#a8c4a0' : '#4ade80' },
+  { category: 'Java Enterprise', techs: ['OSGi', 'Hibernate', 'JPA', 'JAX-RS', 'Maven', 'Gradle'], color: isDark ? '#e57373' : '#f472b6' },
+  { category: 'Cloud & DevOps', techs: ['AWS', 'Docker', 'Kubernetes', 'Jenkins', 'CI/CD', 'Linux'], color: isDark ? '#a0b4c4' : '#818cf8' },
+  { category: 'Databases', techs: ['PostgreSQL', 'MongoDB', 'Redis', 'MySQL', 'DynamoDB'], color: isDark ? '#c4a0b4' : '#e879f9' },
+  { category: 'ML & Data', techs: ['PyTorch', 'Scikit-learn', 'Pandas', 'NumPy', 'OpenAI API'], color: isDark ? '#f7931e' : '#fb923c' },
 ];
 
 // Skill bar component - larger fonts
-function SkillBar({ name, level, delay, color, isInView, theme, colors }: { 
+function SkillBar({ name, level, delay, color, isInView, colors }: { 
   name: string; 
   level: number; 
   delay: number; 
   color: string;
   isInView: boolean;
-  theme: 'dark' | 'light';
   colors: { text: string; textMuted: string };
 }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -119,7 +118,7 @@ function SkillBar({ name, level, delay, color, isInView, theme, colors }: {
         marginBottom: '8px',
       }}>
         <span style={{
-          fontSize: '15px',
+          fontSize: 'clamp(14px, 2.5vw, 15px)',
           fontWeight: 400,
           color: isHovered ? color : colors.text,
           transition: 'color 0.3s ease',
@@ -127,7 +126,7 @@ function SkillBar({ name, level, delay, color, isInView, theme, colors }: {
           {name}
         </span>
         <span style={{
-          fontSize: '14px',
+          fontSize: 'clamp(13px, 2vw, 14px)',
           color: colors.textMuted,
           fontWeight: 300,
         }}>
@@ -137,7 +136,7 @@ function SkillBar({ name, level, delay, color, isInView, theme, colors }: {
       <div style={{
         height: '4px',
         borderRadius: '2px',
-        background: theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
+        background: 'rgba(255, 255, 255, 0.15)',
         overflow: 'hidden',
       }}>
         <motion.div
@@ -158,7 +157,7 @@ function SkillBar({ name, level, delay, color, isInView, theme, colors }: {
 }
 
 // Technology tag with hover effect - larger fonts
-function TechTag({ tech, color, index, isInView, theme }: { tech: string; color: string; index: number; isInView: boolean; theme: 'dark' | 'light' }) {
+function TechTag({ tech, color, index, isInView }: { tech: string; color: string; index: number; isInView: boolean }) {
   return (
     <motion.span
       initial={{ opacity: 0, y: 10 }}
@@ -171,12 +170,12 @@ function TechTag({ tech, color, index, isInView, theme }: { tech: string; color:
       }}
       style={{
         display: 'inline-block',
-        padding: '8px 14px',
+        padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 14px)',
         borderRadius: '8px',
-        background: theme === 'dark' ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)',
-        border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
-        fontSize: '13px',
-        color: theme === 'dark' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.75)',
+        background: 'rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        fontSize: 'clamp(12px, 2vw, 13px)',
+        color: 'rgba(255, 255, 255, 0.9)',
         cursor: 'default',
         transition: 'all 0.3s ease',
       }}
@@ -191,6 +190,11 @@ export default function Skills() {
   const isInView = useInView(ref, { amount: 0.35 });
   const [activeCategory, setActiveCategory] = useState(0);
   const { theme, colors } = useTheme();
+  
+  // Get theme-aware categories
+  const isDark = theme === 'dark';
+  const skillCategories = getSkillCategories(isDark);
+  const segregatedTechnologies = getSegregatedTechnologies(isDark);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -205,17 +209,13 @@ export default function Skills() {
       ref={ref}
       style={{
         minHeight: '100vh',
-        padding: '80px 24px',
+        padding: 'clamp(60px, 10vw, 80px) clamp(16px, 4vw, 24px)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
-        background: theme === 'dark'
-          ? 'linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 50%, #0a0a0a 100%)'
-          : 'linear-gradient(180deg, #fafafa 0%, #f5f5f5 50%, #fafafa 100%)',
-        transition: 'background 0.3s ease',
       }}
     >
       {/* Dynamic background orbs - same as About */}
@@ -265,7 +265,13 @@ export default function Skills() {
         }}
       />
       
-      <motion.div style={{ maxWidth: 1200, width: '100%', opacity, position: 'relative', zIndex: 1 }}>
+      <motion.div
+        variants={sectionViewportVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ amount: sectionViewportConfig.amount, margin: sectionViewportConfig.margin }}
+        style={{ maxWidth: 1200, width: '100%', opacity, position: 'relative', zIndex: 1 }}
+      >
         {/* Header - animates from left */}
         <motion.div
           variants={createVariants('left', 80)}
@@ -273,24 +279,11 @@ export default function Skills() {
           animate={isInView ? 'visible' : 'hidden'}
           style={{ marginBottom: '40px' }}
         >
-          <motion.span
-            initial={{ width: 0 }}
-            animate={isInView ? { width: '40px' } : { width: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            style={{
-              display: 'block',
-              height: '2px',
-              background: theme === 'dark' 
-                ? 'linear-gradient(90deg, #c4a35a, transparent)'
-                : 'linear-gradient(90deg, #0d9488, transparent)',
-              marginBottom: '16px',
-            }}
-          />
           <span style={{
             fontSize: '12px',
             letterSpacing: '4px',
             textTransform: 'uppercase',
-            color: theme === 'dark' ? 'rgba(196, 163, 90, 0.6)' : 'rgba(13, 148, 136, 0.7)',
+            color: theme === 'dark' ? 'rgba(196, 163, 90, 0.6)' : 'rgba(168, 85, 247, 0.8)',
             display: 'block',
             marginBottom: '12px',
           }}>
@@ -330,20 +323,18 @@ export default function Skills() {
               whileTap={{ scale: 0.98 }}
               className="skill-category-btn"
               style={{
-                padding: '10px 18px',
+                padding: 'clamp(8px, 1.5vw, 10px) clamp(14px, 3vw, 18px)',
                 borderRadius: '8px',
                 border: activeCategory === index 
                   ? `1px solid ${category.color}` 
-                  : theme === 'dark' 
-                    ? '1px solid rgba(255, 255, 255, 0.1)'
-                    : '1px solid rgba(0, 0, 0, 0.1)',
+                  : '1px solid rgba(255, 255, 255, 0.1)',
                 background: activeCategory === index 
                   ? `${category.color}15` 
                   : 'transparent',
                 color: activeCategory === index 
                   ? category.color 
                   : colors.textMuted,
-                fontSize: '14px',
+                fontSize: 'clamp(13px, 2.5vw, 14px)',
                 fontWeight: 500,
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
@@ -368,8 +359,9 @@ export default function Skills() {
           animate={isInView ? 'visible' : 'hidden'}
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '24px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))',
+            gap: 'clamp(16px, 3vw, 24px)',
+            alignItems: 'stretch',
           }}
         >
           {/* Skill bars - Selected category */}
@@ -377,19 +369,19 @@ export default function Skills() {
             key={activeCategory}
             variants={createVariants('left', 50)}
             style={{
-              padding: '28px',
+              padding: 'clamp(20px, 4vw, 28px)',
               borderRadius: '20px',
               background: theme === 'dark'
-                ? 'linear-gradient(145deg, rgba(30, 30, 35, 0.6) 0%, rgba(25, 25, 30, 0.4) 100%)'
-                : 'linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 245, 245, 0.7) 100%)',
-              border: theme === 'dark' 
-                ? '1px solid rgba(255, 255, 255, 0.05)'
-                : '1px solid rgba(0, 0, 0, 0.08)',
-              boxShadow: theme === 'light' ? '0 2px 8px rgba(0, 0, 0, 0.04)' : 'none',
+                ? 'linear-gradient(145deg, rgba(196, 163, 90, 0.04) 0%, rgba(192, 192, 192, 0.02) 100%)'
+                : 'linear-gradient(145deg, rgba(168, 85, 247, 0.08) 0%, rgba(34, 211, 238, 0.04) 100%)',
+              border: theme === 'dark'
+                ? '1px solid rgba(196, 163, 90, 0.1)'
+                : '1px solid rgba(168, 85, 247, 0.2)',
+              boxShadow: 'none',
             }}
           >
             <h3 style={{
-              fontSize: '18px',
+              fontSize: 'clamp(18px, 4vw, 22px)',
               fontWeight: 500,
               color: skillCategories[activeCategory].color,
               marginBottom: '24px',
@@ -405,7 +397,6 @@ export default function Skills() {
                   delay={index * 0.08}
                   color={skillCategories[activeCategory].color}
                   isInView={isInView}
-                  theme={theme}
                   colors={{ text: colors.text, textMuted: colors.textMuted }}
                 />
               ))}
@@ -416,23 +407,24 @@ export default function Skills() {
           <motion.div
             variants={createVariants('right', 50)}
             style={{
-              padding: '28px',
+              padding: 'clamp(20px, 4vw, 28px)',
               borderRadius: '20px',
               background: theme === 'dark'
-                ? 'linear-gradient(145deg, rgba(30, 30, 35, 0.4) 0%, rgba(25, 25, 30, 0.2) 100%)'
-                : 'linear-gradient(145deg, rgba(255, 255, 255, 0.7) 0%, rgba(245, 245, 245, 0.5) 100%)',
-              border: theme === 'dark' 
-                ? '1px solid rgba(255, 255, 255, 0.03)'
-                : '1px solid rgba(0, 0, 0, 0.05)',
+                ? 'linear-gradient(145deg, rgba(192, 192, 192, 0.04) 0%, rgba(196, 163, 90, 0.02) 100%)'
+                : 'linear-gradient(145deg, rgba(100, 100, 100, 0.05) 0%, rgba(13, 148, 136, 0.03) 100%)',
+              border: theme === 'dark'
+                ? '1px solid rgba(192, 192, 192, 0.1)'
+                : '1px solid rgba(100, 100, 100, 0.12)',
               display: 'flex',
               flexDirection: 'column',
-              maxHeight: '500px',
-              boxShadow: theme === 'light' ? '0 2px 8px rgba(0, 0, 0, 0.03)' : 'none',
+              maxHeight: 'clamp(400px, 60vh, 600px)',
+              boxShadow: 'none',
               position: 'relative',
+              overflow: 'hidden',
             }}
           >
             <h3 style={{
-              fontSize: '18px',
+              fontSize: 'clamp(18px, 4vw, 22px)',
               fontWeight: 500,
               color: colors.text,
               marginBottom: '20px',
@@ -448,9 +440,7 @@ export default function Skills() {
               left: 0,
               right: 0,
               height: '20px',
-              background: theme === 'dark'
-                ? 'linear-gradient(to bottom, rgba(25, 25, 30, 0.8), transparent)'
-                : 'linear-gradient(to bottom, rgba(245, 245, 245, 0.8), transparent)',
+              background: 'linear-gradient(to bottom, rgba(25, 25, 30, 0.8), transparent)',
               pointerEvents: 'none',
               zIndex: 1,
             }} />
@@ -462,18 +452,18 @@ export default function Skills() {
               left: 0,
               right: 0,
               height: '40px',
-              background: theme === 'dark'
-                ? 'linear-gradient(to top, rgba(25, 25, 30, 0.95), transparent)'
-                : 'linear-gradient(to top, rgba(245, 245, 245, 0.95), transparent)',
+              background: 'linear-gradient(to top, rgba(25, 25, 30, 0.95), transparent)',
               pointerEvents: 'none',
               zIndex: 1,
             }} />
             
             <div
               className="tech-scroll"
+              data-lenis-prevent="true"
               style={{
                 flex: 1,
                 overflowY: 'auto',
+                overscrollBehavior: 'contain',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '20px',
@@ -506,7 +496,6 @@ export default function Skills() {
                         color={group.color} 
                         index={index} 
                         isInView={isInView}
-                        theme={theme}
                       />
                     ))}
                   </div>

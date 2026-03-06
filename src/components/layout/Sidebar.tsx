@@ -71,29 +71,23 @@ const navItems = [
   { label: 'Contact', href: '#contact', icon: icons.contact },
 ];
 
-// Mobile nav items - 5 items for bottom nav
-const mobileNavItems = [
-  { label: 'Home', href: '#home', icon: icons.home },
-  { label: 'About', href: '#about', icon: icons.about },
-  { label: 'Skills', href: '#skills', icon: icons.skills },
-  { label: 'Projects', href: '#projects', icon: icons.projects },
-  { label: 'Contact', href: '#contact', icon: icons.contact },
-];
-
 export default function Sidebar() {
   const { theme, toggleTheme, colors } = useTheme();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [isDock, setIsDock] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
+    const checkViewport = () => {
+      // 1200px threshold covers typical iPad sizes and all mobile phones
+      setIsDock(window.innerWidth <= 1200);
       setIsMobile(window.innerWidth <= 768);
     };
     
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    checkViewport();
+    window.addEventListener('resize', checkViewport);
     
     // Track active section
     const handleScroll = () => {
@@ -111,7 +105,7 @@ export default function Sidebar() {
     
     window.addEventListener('scroll', handleScroll);
     return () => {
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('resize', checkViewport);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -126,17 +120,24 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      {!isMobile && (
-        <motion.nav
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          onMouseEnter={() => setIsExpanded(true)}
-          onMouseLeave={() => setIsExpanded(false)}
-          className="desktop-sidebar"
-          style={{
-            position: 'fixed',
+      <motion.nav
+        initial={isDock ? { opacity: 0, y: 20 } : { opacity: 0, x: -20 }}
+        animate={isDock ? { opacity: 1, y: 0 } : { opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+        onMouseEnter={() => { if (!isMobile) setIsExpanded(true); }}
+        onMouseLeave={() => { if (!isMobile) setIsExpanded(false); }}
+        className="desktop-sidebar"
+        style={{
+          position: 'fixed',
+          ...(isDock ? {
+            bottom: 'calc(24px + env(safe-area-inset-bottom))',
+            left: 0,
+            right: 0,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          } : {
             left: '20px',
             top: 0,
             bottom: 0,
@@ -144,32 +145,36 @@ export default function Sidebar() {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'flex-start',
-            zIndex: 9999,
+          }),
+          zIndex: 9999,
+        }}
+      >
+        <motion.div
+          animate={{ 
+            width: isMobile ? 'auto' : (isDock ? 'auto' : (isExpanded ? 150 : 60)),
+            height: isMobile ? 'auto' : (isDock ? 'auto' : 'auto')
+          }}
+          transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          style={{
+            display: 'flex',
+            flexDirection: isMobile ? (isExpanded ? 'column' : 'row') : (isDock ? 'row' : 'column'),
+            gap: isDock ? '8px' : '2px',
+            padding: isDock ? '8px 12px' : '12px 8px',
+            borderRadius: isDock ? '30px' : '16px',
+            background: theme === 'dark' 
+              ? 'linear-gradient(145deg, rgba(30, 30, 35, 0.95) 0%, rgba(25, 25, 30, 0.9) 100%)'
+              : 'linear-gradient(145deg, rgba(20, 15, 30, 0.95) 0%, rgba(15, 10, 25, 0.9) 100%)',
+            border: theme === 'dark'
+              ? '1px solid rgba(196, 163, 90, 0.15)'
+              : '1px solid rgba(168, 85, 247, 0.25)',
+            backdropFilter: 'blur(20px)',
+            boxShadow: theme === 'dark'
+              ? '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+              : '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(168, 85, 247, 0.1)',
+            overflow: 'hidden',
+            transition: 'background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease',
           }}
         >
-          <motion.div
-            animate={{ width: isExpanded ? 150 : 60 }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2px',
-              padding: '12px 8px',
-              borderRadius: '16px',
-              background: theme === 'dark' 
-                ? 'linear-gradient(145deg, rgba(30, 30, 35, 0.95) 0%, rgba(25, 25, 30, 0.9) 100%)'
-                : 'linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 245, 0.9) 100%)',
-              border: theme === 'dark'
-                ? '1px solid rgba(196, 163, 90, 0.15)'
-                : '1px solid rgba(0, 0, 0, 0.08)',
-              backdropFilter: 'blur(20px)',
-              boxShadow: theme === 'dark'
-                ? '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-                : '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              overflow: 'hidden',
-              transition: 'background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease',
-            }}
-          >
             {navItems.map((item, index) => {
               const isActive = activeSection === item.href.replace('#', '');
               return (
@@ -182,25 +187,22 @@ export default function Sidebar() {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    gap: '12px',
-                    padding: '12px',
+                    justifyContent: (!isDock && isExpanded) ? 'flex-start' : 'center',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    gap: isDock ? 'clamp(4px, 1vw, 12px)' : '12px',
+                    padding: isDock ? 'clamp(6px, 2vw, 12px)' : '12px',
                     borderRadius: '10px',
-                    fontSize: '12px',
+                    fontSize: isMobile ? '9px' : '12px',
                     fontWeight: 500,
                     color: isActive ? colors.gold : hoveredIndex === index ? colors.gold : colors.textMuted,
                     textDecoration: 'none',
                     letterSpacing: '0.3px',
                     transition: 'color 0.2s ease, background 0.2s ease',
-                    background: isActive 
-                      ? `${colors.gold}20` 
-                      : hoveredIndex === index 
-                        ? `${colors.gold}15` 
-                        : 'transparent',
+                    background: 'transparent',
                     whiteSpace: 'nowrap',
                   }}
                   className="interactive"
-                  whileHover={{ x: isExpanded ? 2 : 0 }}
+                  whileHover={{ x: (isExpanded && !isMobile) ? 2 : 0, y: (isExpanded && isMobile) ? -2 : 0 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <span
@@ -220,9 +222,9 @@ export default function Sidebar() {
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.span
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
+                        initial={isMobile ? { opacity: 0, height: 0, marginTop: 0 } : { opacity: 0, x: -10 }}
+                        animate={isMobile ? { opacity: 1, height: 'auto', marginTop: 4 } : { opacity: 1, x: 0 }}
+                        exit={isMobile ? { opacity: 0, height: 0, marginTop: 0 } : { opacity: 0, x: -10 }}
                         transition={{ duration: 0.2 }}
                         style={{ overflow: 'hidden' }}
                       >
@@ -241,12 +243,13 @@ export default function Sidebar() {
               whileTap={{ scale: 0.98 }}
               style={{
                 display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
                 alignItems: 'center',
-                justifyContent: 'flex-start',
-                gap: '12px',
-                padding: '12px',
+                justifyContent: (!isDock && isExpanded) ? 'flex-start' : 'center',
+                gap: isDock ? 'clamp(4px, 1vw, 12px)' : '12px',
+                padding: isDock ? 'clamp(6px, 2vw, 12px)' : '12px',
                 borderRadius: '10px',
-                fontSize: '12px',
+                fontSize: isMobile ? '9px' : '12px',
                 fontWeight: 500,
                 color: colors.gold,
                 border: 'none',
@@ -254,7 +257,8 @@ export default function Sidebar() {
                 letterSpacing: '0.3px',
                 transition: 'background 0.2s ease',
                 background: `${colors.gold}10`,
-                marginTop: '8px',
+                marginTop: isMobile ? '0' : (isDock ? '0' : '8px'),
+                marginLeft: isMobile ? '0' : (isDock ? '8px' : '0'),
                 whiteSpace: 'nowrap',
               }}
             >
@@ -289,113 +293,6 @@ export default function Sidebar() {
             </motion.button>
           </motion.div>
         </motion.nav>
-      )}
-
-      {/* Mobile Bottom Navigation */}
-      {isMobile && (
-        <motion.nav
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mobile-nav"
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 9999,
-            padding: '8px 12px',
-            paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
-            background: theme === 'dark'
-              ? 'linear-gradient(to top, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.95) 100%)'
-              : 'linear-gradient(to top, rgba(250, 250, 250, 0.98) 0%, rgba(250, 250, 250, 0.95) 100%)',
-            borderTop: theme === 'dark'
-              ? '1px solid rgba(196, 163, 90, 0.15)'
-              : '1px solid rgba(0, 0, 0, 0.08)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            transition: 'background 0.3s ease, border 0.3s ease',
-          }}
-        >
-          {mobileNavItems.map((item) => {
-            const isActive = activeSection === item.href.replace('#', '');
-            return (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => handleClick(e, item.href)}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                  padding: '8px 12px',
-                  borderRadius: '12px',
-                  textDecoration: 'none',
-                  transition: 'all 0.2s ease',
-                  background: isActive ? `${colors.gold}15` : 'transparent',
-                  minWidth: '52px',
-                }}
-              >
-                <span
-                  style={{
-                    color: isActive ? colors.gold : colors.textMuted,
-                    transition: 'color 0.2s ease',
-                    transform: isActive ? 'scale(1.1)' : 'scale(1)',
-                  }}
-                >
-                  {item.icon}
-                </span>
-                <span
-                  style={{
-                    fontSize: '9px',
-                    fontWeight: 500,
-                    color: isActive ? colors.gold : colors.textMuted,
-                    letterSpacing: '0.3px',
-                    transition: 'color 0.2s ease',
-                  }}
-                >
-                  {item.label}
-                </span>
-              </a>
-            );
-          })}
-          
-          {/* Mobile Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '8px 12px',
-              borderRadius: '12px',
-              border: 'none',
-              background: `${colors.gold}15`,
-              cursor: 'pointer',
-              minWidth: '52px',
-            }}
-          >
-            <span style={{ color: colors.gold }}>
-              {theme === 'dark' ? icons.sun : icons.moon}
-            </span>
-            <span
-              style={{
-                fontSize: '9px',
-                fontWeight: 500,
-                color: colors.gold,
-                letterSpacing: '0.3px',
-              }}
-            >
-              {theme === 'dark' ? 'Light' : 'Dark'}
-            </span>
-          </button>
-        </motion.nav>
-      )}
-    </>
+      </>
   );
 }

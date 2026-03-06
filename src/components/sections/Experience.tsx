@@ -4,13 +4,13 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
-import { createVariants, containerVariants } from '@/utils/animations';
+import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
 
 const experiences = [
   {
     role: 'Software Engineering Intern',
     company: 'Experian PLC',
-    period: 'Sept 2025 - Present',
+    period: 'Sept 2025 - March 2026',
     location: 'Cyberjaya, Malaysia',
     description: [
       'Resolved Hazelcast instability during Karpenter node replacement, reducing downtime from ~60s to ~1s (~98% reduction)',
@@ -40,17 +40,13 @@ export default function Experience() {
       ref={ref}
       style={{
         minHeight: '100vh',
-        padding: '80px 24px',
+        padding: 'clamp(60px, 10vw, 80px) clamp(16px, 4vw, 24px)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         boxSizing: 'border-box',
         position: 'relative',
         overflow: 'hidden',
-        background: theme === 'dark'
-          ? 'linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 50%, #0a0a0a 100%)'
-          : 'linear-gradient(180deg, #fafafa 0%, #f5f5f5 50%, #fafafa 100%)',
-        transition: 'background 0.3s ease',
       }}
     >
       {/* Dynamic background orbs - same as About */}
@@ -100,7 +96,13 @@ export default function Experience() {
         }}
       />
 
-      <div style={{ maxWidth: 1200, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
+      <motion.div
+        variants={sectionViewportVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ amount: sectionViewportConfig.amount, margin: sectionViewportConfig.margin }}
+        style={{ maxWidth: 1200, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}
+      >
         {/* Header - animates from left */}
         <motion.div
           variants={createVariants('left', 80)}
@@ -160,20 +162,6 @@ export default function Experience() {
                 overflow: 'hidden',
               }}
             >
-              {/* Decorative gradient line */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '2px',
-                  background: theme === 'dark'
-                    ? 'linear-gradient(90deg, transparent, rgba(196, 163, 90, 0.5), transparent)'
-                    : 'linear-gradient(90deg, transparent, rgba(13, 148, 136, 0.4), transparent)',
-                }}
-              />
-
               {/* Left column - Role info */}
               <div>
                 <h3
@@ -294,7 +282,7 @@ export default function Experience() {
             </motion.div>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

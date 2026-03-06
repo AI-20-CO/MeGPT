@@ -4,23 +4,27 @@ Ask me about myself, about my skills, about my achievements.
 
 ## Portfolio Website
 
-A modern, interactive portfolio website built with Next.js 15, featuring smooth animations, dark/light theme, and a beautiful UI.
+A modern, interactive portfolio website built with Next.js 16, featuring WebGL effects, smooth animations, and a beautiful UI with dark/light theme support.
 
 ## Features
 
--  **Dark/Light Theme** - Seamless theme switching with custom color schemes
--  **Smooth Animations** - Framer Motion powered scroll animations
--  **Interactive UI** - Custom fluid cursor and engaging interactions
--  **Fully Responsive** - Optimized for all device sizes
--  **Fast Performance** - Built with Next.js 15 and Turbopack
--  **Type-Safe** - Written in TypeScript
+- **Dark/Light Theme** - Seamless theme switching with custom color schemes (Gold/Silver in dark, Purple/Cyan in light)
+- **WebGL Effects** - Interactive orb visualization using OGL library with GLSL shaders
+- **Hyperspeed Background** - Three.js powered highway animation with bloom effects
+- **Smooth Animations** - Framer Motion powered scroll and transition animations
+- **Interactive UI** - Custom fluid cursor and engaging hover interactions
+- **Fully Responsive** - Optimized for all devices (360px - 4K+)
+- **Fast Performance** - Built with Next.js 16 and Turbopack
+- **Type-Safe** - Written in TypeScript with strict types
+- **Zero Vulnerabilities** - All dependencies security audited
 
 ## Tech Stack
 
-- **Framework:** Next.js 15.4.6
-- **Language:** TypeScript
-- **Styling:** CSS-in-JS with Framer Motion
-- **Animations:** Framer Motion
+- **Framework:** Next.js 16.1.6 (Turbopack)
+- **Language:** TypeScript 5.x
+- **3D/WebGL:** Three.js, OGL, Postprocessing
+- **Animations:** Framer Motion 12.x
+- **Styling:** CSS-in-JS with CSS Custom Properties
 - **Font:** Inter (Google Fonts)
 
 ##  Getting Started
@@ -46,57 +50,56 @@ portfolio/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── favicon.ico
-│   │   ├── globals.css         # Global styles
-│   │   ├── layout.tsx          # Root layout
+│   │   ├── globals.css         # Global styles + responsive breakpoints
+│   │   ├── layout.tsx          # Root layout with providers
 │   │   └── page.tsx            # Home page
 │   │
 │   ├── components/             # React components
 │   │   ├── sections/           # Page sections
-│   │   │   ├── Hero.tsx
-│   │   │   ├── About.tsx
-│   │   │   ├── Skills.tsx
-│   │   │   ├── Experience.tsx
-│   │   │   ├── Projects.tsx
-│   │   │   ├── Contact.tsx
+│   │   │   ├── Hero.tsx        # Landing with WebGL orbs
+│   │   │   ├── About.tsx       # Personal information
+│   │   │   ├── Skills.tsx      # Technical skills showcase
+│   │   │   ├── Experience.tsx  # Work experience timeline
+│   │   │   ├── Projects.tsx    # Portfolio projects gallery
+│   │   │   ├── Contact.tsx     # Contact information
 │   │   │   └── index.ts
 │   │   │
 │   │   ├── layout/             # Layout components
-│   │   │   ├── Sidebar.tsx
-│   │   │   ├── Footer.tsx
+│   │   │   ├── Sidebar.tsx     # Navigation sidebar
 │   │   │   └── index.ts
 │   │   │
-│   │   ├── ui/                 # Reusable UI components
-│   │   │   ├── FluidCursor.tsx
-│   │   │   ├── LoadingScreen.tsx
-│   │   │   ├── SectionTransition.tsx
-│   │   │   └── index.ts
-│   │   │
-│   │   └── index.ts            # Barrel export
+│   │   └── ui/                 # Reusable UI components
+│   │       ├── FluidCursor.tsx # Custom cursor effect
+│   │       ├── FloatingOrb.tsx # Floating orb component
+│   │       ├── Hyperspeed.tsx  # Three.js highway animation
+│   │       ├── LoadingScreen.tsx
+│   │       ├── Orb.tsx         # WebGL orb with GLSL shaders
+│   │       └── index.ts
 │   │
 │   ├── config/                 # Configuration
-│   │   ├── theme.ts            # Theme colors & constants
+│   │   ├── theme.ts            # Theme colors, animation, breakpoints
 │   │   ├── site.ts             # Site configuration
 │   │   └── index.ts
 │   │
 │   ├── context/                # React Context providers
-│   │   ├── ThemeContext.tsx
+│   │   ├── ThemeContext.tsx    # Theme state management
 │   │   └── index.ts
 │   │
-│   ├── hooks/                  # Custom React hooks
-│   │   ├── useSectionTransition.ts
+│   ├── hooks/                  # Custom React hooks (placeholder)
 │   │   └── index.ts
 │   │
 │   ├── types/                  # TypeScript type definitions
 │   │   └── index.ts
 │   │
 │   └── utils/                  # Utility functions
-│       ├── animations.ts       # Animation helpers
+│       ├── animations.ts       # Framer Motion animation presets
 │       └── index.ts
 │
 ├── public/                     # Static assets
 ├── package.json
 ├── tsconfig.json
 ├── next.config.ts
+├── eslint.config.mjs
 └── README.md
 ```
 

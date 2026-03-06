@@ -35,6 +35,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   cursor: none;
+  max-width: 100vw;
+}
+
+/* Prevent horizontal scroll globally */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Custom scrollbar */
@@ -118,5 +126,313 @@ a {
 @supports (padding: max(0px)) {
   .mobile-nav {
     padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+/*
+  Device Reference:
+  - iPhone SE: 375px
+  - Samsung S5: 360px
+  - Samsung S8+: 360px
+  - iPhone 13/14: 390px
+  - Samsung S20: 412px
+  - iPhone 14 Pro Max / 15 Pro Max / 16 Pro Max: 430px
+  - Samsung S26: ~430px
+  - iPad Mini: 768px
+  - iPad: 810px
+  - iPad Pro 11": 834px
+  - iPad Pro 12.9": 1024px
+  - MacBook Air 13": 1280px
+  - MacBook Pro 14": 1512px
+  - MacBook Pro 16": 1728px
+*/
+
+/* ===== BASE/DEFAULT STYLES (Desktop) ===== */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.hero-orb {
+  width: clamp(600px, 85vw, 1200px);
+  height: clamp(600px, 85vw, 1200px);
+}
+
+/* ===== LARGE PHONES (390px - 480px) ===== */
+/* iPhone 13, 14, 14 Pro, 14 Pro Max, 15/16 series, Samsung S20, S26 */
+@media (max-width: 480px) {
+  .skills-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  .contact-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  
+  .skill-category-btn {
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+  }
+  
+  section {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  .hero-orb {
+    width: 160vw !important;
+    height: 160vw !important;
+  }
+}
+
+/* ===== SMALL PHONES (< 390px) ===== */
+/* iPhone SE, Samsung S5, S8+ */
+@media (max-width: 389px) {
+  .skills-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  .contact-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  
+  .skill-category-btn {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+  
+  section {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  
+  .hero-orb {
+    width: 160vw !important;
+    height: 160vw !important;
+  }
+}
+
+/* ===== SMALL TABLETS (481px - 767px) ===== */
+/* Large phones in landscape, small tablets */
+@media (min-width: 481px) and (max-width: 767px) {
+  .skills-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  .contact-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+  
+  .hero-orb {
+    width: 90vw !important;
+    height: 90vw !important;
+  }
+}
+
+/* ===== TABLETS (768px - 1023px) ===== */
+/* iPad Mini, iPad, iPad Pro 11" */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .skills-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+  
+  .contact-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 16px !important;
+  }
+  
+  section {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+  
+  .hero-orb {
+    width: 100vw !important;
+    height: 100vw !important;
+  }
+}
+
+/* ===== LARGE TABLETS / iPad Pro 12.9" (1024px - 1279px) ===== */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px !important;
+  }
+  
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+  
+  .contact-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 16px !important;
+  }
+  
+  .hero-orb {
+    width: 100vw !important;
+    height: 100vw !important;
+  }
+}
+
+/* ===== SMALL LAPTOPS (1280px - 1511px) ===== */
+/* MacBook Air 13" */
+@media (min-width: 1280px) and (max-width: 1511px) {
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px !important;
+  }
+  
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px !important;
+  }
+  
+  .contact-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
+  }
+  
+  .hero-orb {
+    width: 70vw !important;
+    height: 70vw !important;
+  }
+}
+
+/* ===== LARGE LAPTOPS (1512px+) ===== */
+/* MacBook Pro 14" and 16" */
+@media (min-width: 1512px) {
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px !important;
+  }
+  
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px !important;
+  }
+  
+  .contact-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 24px !important;
+  }
+  
+  .hero-orb {
+    width: 75vw !important;
+    height: 75vw !important;
+  }
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY & SPACING ===== */
+/* Section padding adjustments */
+@media (max-width: 480px) {
+  section {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-top: 60px !important;
+    padding-bottom: 100px !important; /* Extra padding for mobile nav */
+  }
+  
+  /* Contact cards */
+  .contact-card {
+    padding: 16px !important;
+  }
+  
+  /* Project cards */
+  .project-card {
+    padding: 16px !important;
+  }
+  
+  /* Ensure Contact section has extra bottom padding for mobile nav */
+  #contact {
+    padding-bottom: 120px !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+  section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-top: 70px !important;
+    padding-bottom: 100px !important; /* Extra padding for mobile nav */
+  }
+  
+  #contact {
+    padding-bottom: 120px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  section {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+}
+
+/* ===== MOBILE NAVIGATION SAFE AREA ===== */
+@media (max-width: 768px) {
+  /* Prevent content from being hidden behind mobile nav */
+  body {
+    padding-bottom: 80px;
+  }
+  
+  /* Hero section overflow hidden to prevent horizontal scroll from orb */
+  #home {
+    overflow-x: clip !important;
+  }
+}
+
+/* ===== TOUCH DEVICE OPTIMIZATIONS ===== */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets on mobile */
+  .skill-category-btn {
+    min-height: 44px !important;
+  }
+  
+  /* Remove hover effects that don't work on touch */
+  .project-card:hover,
+  .contact-card:hover {
+    transform: none !important;
   }
 }
