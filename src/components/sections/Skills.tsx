@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
-import { createVariants, containerVariants } from '@/utils/animations';
+import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
 
 // Theme-aware skill category colors
 const getSkillCategories = (isDark: boolean) => [
@@ -14,7 +14,7 @@ const getSkillCategories = (isDark: boolean) => [
     skills: [
       { name: 'Java', level: 95 },
       { name: 'TypeScript', level: 90 },
-      { name: 'Python', level: 85 },
+      { name: 'Python', level: 95 },
       { name: 'SQL', level: 85 },
     ],
   },
@@ -118,7 +118,7 @@ function SkillBar({ name, level, delay, color, isInView, colors }: {
         marginBottom: '8px',
       }}>
         <span style={{
-          fontSize: '15px',
+          fontSize: 'clamp(14px, 2.5vw, 15px)',
           fontWeight: 400,
           color: isHovered ? color : colors.text,
           transition: 'color 0.3s ease',
@@ -126,7 +126,7 @@ function SkillBar({ name, level, delay, color, isInView, colors }: {
           {name}
         </span>
         <span style={{
-          fontSize: '14px',
+          fontSize: 'clamp(13px, 2vw, 14px)',
           color: colors.textMuted,
           fontWeight: 300,
         }}>
@@ -170,11 +170,11 @@ function TechTag({ tech, color, index, isInView }: { tech: string; color: string
       }}
       style={{
         display: 'inline-block',
-        padding: '8px 14px',
+        padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 14px)',
         borderRadius: '8px',
         background: 'rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.15)',
-        fontSize: '13px',
+        fontSize: 'clamp(12px, 2vw, 13px)',
         color: 'rgba(255, 255, 255, 0.9)',
         cursor: 'default',
         transition: 'all 0.3s ease',
@@ -265,7 +265,13 @@ export default function Skills() {
         }}
       />
       
-      <motion.div style={{ maxWidth: 1200, width: '100%', opacity, position: 'relative', zIndex: 1 }}>
+      <motion.div
+        variants={sectionViewportVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ amount: sectionViewportConfig.amount, margin: sectionViewportConfig.margin }}
+        style={{ maxWidth: 1200, width: '100%', opacity, position: 'relative', zIndex: 1 }}
+      >
         {/* Header - animates from left */}
         <motion.div
           variants={createVariants('left', 80)}
@@ -317,7 +323,7 @@ export default function Skills() {
               whileTap={{ scale: 0.98 }}
               className="skill-category-btn"
               style={{
-                padding: '10px 18px',
+                padding: 'clamp(8px, 1.5vw, 10px) clamp(14px, 3vw, 18px)',
                 borderRadius: '8px',
                 border: activeCategory === index 
                   ? `1px solid ${category.color}` 
@@ -328,7 +334,7 @@ export default function Skills() {
                 color: activeCategory === index 
                   ? category.color 
                   : colors.textMuted,
-                fontSize: '14px',
+                fontSize: 'clamp(13px, 2.5vw, 14px)',
                 fontWeight: 500,
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
@@ -353,7 +359,9 @@ export default function Skills() {
           animate={isInView ? 'visible' : 'hidden'}
           style={{
             display: 'grid',
-            gap: '24px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))',
+            gap: 'clamp(16px, 3vw, 24px)',
+            alignItems: 'stretch',
           }}
         >
           {/* Skill bars - Selected category */}
@@ -361,15 +369,19 @@ export default function Skills() {
             key={activeCategory}
             variants={createVariants('left', 50)}
             style={{
-              padding: '28px',
+              padding: 'clamp(20px, 4vw, 28px)',
               borderRadius: '20px',
-              background: 'linear-gradient(145deg, rgba(30, 30, 35, 0.6) 0%, rgba(25, 25, 30, 0.4) 100%)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              background: theme === 'dark'
+                ? 'linear-gradient(145deg, rgba(196, 163, 90, 0.04) 0%, rgba(192, 192, 192, 0.02) 100%)'
+                : 'linear-gradient(145deg, rgba(168, 85, 247, 0.08) 0%, rgba(34, 211, 238, 0.04) 100%)',
+              border: theme === 'dark'
+                ? '1px solid rgba(196, 163, 90, 0.1)'
+                : '1px solid rgba(168, 85, 247, 0.2)',
               boxShadow: 'none',
             }}
           >
             <h3 style={{
-              fontSize: '18px',
+              fontSize: 'clamp(18px, 4vw, 22px)',
               fontWeight: 500,
               color: skillCategories[activeCategory].color,
               marginBottom: '24px',
@@ -395,19 +407,24 @@ export default function Skills() {
           <motion.div
             variants={createVariants('right', 50)}
             style={{
-              padding: '28px',
+              padding: 'clamp(20px, 4vw, 28px)',
               borderRadius: '20px',
-              background: 'linear-gradient(145deg, rgba(30, 30, 35, 0.4) 0%, rgba(25, 25, 30, 0.2) 100%)',
-              border: '1px solid rgba(255, 255, 255, 0.03)',
+              background: theme === 'dark'
+                ? 'linear-gradient(145deg, rgba(192, 192, 192, 0.04) 0%, rgba(196, 163, 90, 0.02) 100%)'
+                : 'linear-gradient(145deg, rgba(100, 100, 100, 0.05) 0%, rgba(13, 148, 136, 0.03) 100%)',
+              border: theme === 'dark'
+                ? '1px solid rgba(192, 192, 192, 0.1)'
+                : '1px solid rgba(100, 100, 100, 0.12)',
               display: 'flex',
               flexDirection: 'column',
-              maxHeight: '500px',
+              maxHeight: 'clamp(400px, 60vh, 600px)',
               boxShadow: 'none',
               position: 'relative',
+              overflow: 'hidden',
             }}
           >
             <h3 style={{
-              fontSize: '18px',
+              fontSize: 'clamp(18px, 4vw, 22px)',
               fontWeight: 500,
               color: colors.text,
               marginBottom: '20px',
@@ -442,9 +459,11 @@ export default function Skills() {
             
             <div
               className="tech-scroll"
+              data-lenis-prevent="true"
               style={{
                 flex: 1,
                 overflowY: 'auto',
+                overscrollBehavior: 'contain',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '20px',

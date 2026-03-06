@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
-import { createVariants, containerVariants } from '@/utils/animations';
+import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
 
 // Animated line component
 function AnimatedLine({ delay, theme }: { delay: number; theme: string }) {
@@ -136,7 +136,11 @@ export default function Contact() {
         }}
       />
 
-      <motion.div 
+      <motion.div
+        variants={sectionViewportVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ amount: sectionViewportConfig.amount, margin: sectionViewportConfig.margin }}
         style={{ 
           maxWidth: 900, 
           width: '100%', 
@@ -194,7 +198,7 @@ export default function Contact() {
               transition: 'color 0.5s ease',
             }}
           >
-            Currently available for internship opportunities and collaborative projects. 
+            Currently available for opportunities and collaborative projects. 
             Based in Kuala Lumpur, Malaysia.
           </p>
         </motion.div>

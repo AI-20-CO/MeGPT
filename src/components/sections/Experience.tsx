@@ -4,13 +4,13 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
-import { createVariants, containerVariants } from '@/utils/animations';
+import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
 
 const experiences = [
   {
     role: 'Software Engineering Intern',
     company: 'Experian PLC',
-    period: 'Sept 2025 - Present',
+    period: 'Sept 2025 - March 2026',
     location: 'Cyberjaya, Malaysia',
     description: [
       'Resolved Hazelcast instability during Karpenter node replacement, reducing downtime from ~60s to ~1s (~98% reduction)',
@@ -96,7 +96,13 @@ export default function Experience() {
         }}
       />
 
-      <div style={{ maxWidth: 1200, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
+      <motion.div
+        variants={sectionViewportVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ amount: sectionViewportConfig.amount, margin: sectionViewportConfig.margin }}
+        style={{ maxWidth: 1200, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}
+      >
         {/* Header - animates from left */}
         <motion.div
           variants={createVariants('left', 80)}
@@ -276,7 +282,7 @@ export default function Experience() {
             </motion.div>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

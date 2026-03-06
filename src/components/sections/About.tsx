@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
-import { createVariants, containerVariants } from '@/utils/animations';
+import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
 
 export default function About() {
   const ref = useRef(null);
@@ -80,7 +80,13 @@ export default function About() {
         }}
       />
       
-      <div style={{ maxWidth: 1000, width: '100%', position: 'relative', zIndex: 1 }}>
+      <motion.div
+        variants={sectionViewportVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ amount: sectionViewportConfig.amount, margin: sectionViewportConfig.margin }}
+        style={{ maxWidth: 1000, width: '100%', position: 'relative', zIndex: 1 }}
+      >
         {/* Header - animates from left */}
         <motion.div
           variants={createVariants('left', 80)}
@@ -264,7 +270,7 @@ export default function About() {
             </div>
           </motion.div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

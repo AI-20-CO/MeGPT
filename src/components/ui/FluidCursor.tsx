@@ -126,7 +126,7 @@ export default function FluidCursor() {
           translateX: '-50%',
           translateY: '-50%',
           pointerEvents: 'none',
-          zIndex: 9999,
+          zIndex: 99999,
         }}
       >
         <motion.div
@@ -154,7 +154,7 @@ export default function FluidCursor() {
           translateX: '-50%',
           translateY: '-50%',
           pointerEvents: 'none',
-          zIndex: 9998,
+          zIndex: 99998,
           scale: outerScale,
           opacity: outerOpacity,
         }}
@@ -185,7 +185,7 @@ export default function FluidCursor() {
           translateX: '-50%',
           translateY: '-50%',
           pointerEvents: 'none',
-          zIndex: 9997,
+          zIndex: 99997,
         }}
       >
         <motion.div

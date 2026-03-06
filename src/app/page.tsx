@@ -93,8 +93,8 @@ function MainContent() {
         body {
           background: ${theme === 'dark' ? '#0a0a0a' : '#0a0a0a'} !important;
         }
-        /* Mobile - bottom nav padding */
-        @media (max-width: 768px) {
+        /* Mobile and Tablet - bottom nav padding */
+        @media (max-width: 1200px) {
           main {
             padding-bottom: 100px;
           }

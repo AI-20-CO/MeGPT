@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring }
 import { useRef, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
-import { createVariants, containerVariants } from '@/utils/animations';
+import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
 
 const projects = [
   {
@@ -148,7 +148,13 @@ export default function Projects() {
         }}
       />
 
-      <motion.div style={{ maxWidth: 1100, width: '100%', opacity, position: 'relative', zIndex: 1 }}>
+      <motion.div
+        variants={sectionViewportVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ amount: sectionViewportConfig.amount, margin: sectionViewportConfig.margin }}
+        style={{ maxWidth: 1100, width: '100%', opacity, position: 'relative', zIndex: 1 }}
+      >
         {/* Header */}
         <motion.div
           variants={createVariants('left', 80)}
@@ -201,12 +207,16 @@ export default function Projects() {
                   boxSizing: 'border-box',
                   background: hoveredIndex === index 
                     ? project.gradient
-                    : 'linear-gradient(145deg, rgba(30, 30, 35, 0.95) 0%, rgba(25, 25, 30, 0.9) 100%)',
+                    : theme === 'dark'
+                      ? 'linear-gradient(145deg, rgba(196, 163, 90, 0.04) 0%, rgba(192, 192, 192, 0.02) 100%)'
+                      : 'linear-gradient(145deg, rgba(168, 85, 247, 0.08) 0%, rgba(34, 211, 238, 0.04) 100%)',
                   border: hoveredIndex === index 
                     ? theme === 'dark'
                       ? '1px solid rgba(196, 163, 90, 0.3)'
                       : '1px solid rgba(168, 85, 247, 0.35)'
-                    : '1px solid rgba(255, 255, 255, 0.1)',
+                    : theme === 'dark'
+                      ? '1px solid rgba(196, 163, 90, 0.1)'
+                      : '1px solid rgba(168, 85, 247, 0.2)',
                   position: 'relative',
                   overflow: 'hidden',
                   transition: 'all 0.4s ease',

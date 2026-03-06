@@ -77,10 +77,14 @@ export default function Hero() {
   const mouseY = useMotionValue(0);
   const [particles] = useState(() => Array.from({ length: 20 }, (_, i) => i));
   
+  // Hero section scroll progress (for text opacity/scale)
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
   });
+  
+  // Full page scroll progress (for orb animation throughout entire page)
+  const { scrollYProgress: fullPageProgress } = useScroll();
 
   // Smooth spring animations for mouse tracking
   const springConfig = { damping: 25, stiffness: 150 };
@@ -91,9 +95,74 @@ export default function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
   
-  // Orb parallax
+  // Orb parallax (gradient orbs - hero section only)
   const orbY1 = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const orbY2 = useTransform(scrollYProgress, [0, 1], [0, -300]);
+  
+  // Responsive breakpoint
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Initial check
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // Aesthetic Parallax Path mapped to sections
+  // Maps roughly to: Hero(0), About(0.2), Skills(0.4), Experience(0.6), Projects(0.8), Contact(1)
+  
+  // Weaves delicately, but centers during Experience (0.6) then expands away
+  const orbMainXRaw = useTransform(
+    fullPageProgress,
+    [0, 0.2, 0.4, 0.6, 0.8, 1],
+    // If mobile, keep it more centered due to limited width
+    isMobile 
+      ? ['-50%', '-50%', '-50%', '-50%', '-50%', '-50%']
+      : ['-50%', '-20%', '-80%', '-50%', '-75%', '-50%']
+  );
+
+  // Y-Position: Carefully calibrated to sync with viewports
+  // 0% = Hero, 20% = About, 40% = Skills, 60% = Experience, 80% = Projects, 100% = Contact
+  // Using vh units mapping to ensure it stays in the viewport regardless of device height
+  const orbMainYRaw = useTransform(
+    fullPageProgress, 
+    [0, 0.2, 0.4, 0.6, 0.8, 1], 
+    isMobile
+      ? ['0vh', '100vh', '200vh', '300vh', '400vh', '500vh']
+      : ['0vh', '120vh', '240vh', '360vh', '480vh', '600vh']
+  );
+  
+  // Breaths dynamically. Around Experience (0.6), it centers and is medium size.
+  // Between Experience (0.6) and Projects (0.8), it expands massively as a transition
+  const orbMainScaleRaw = useTransform(
+    fullPageProgress, 
+    [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], 
+    // Mobile uses slightly smaller scales to prevent overflow issues. Hero (0) is adjusted slightly larger now.
+    isMobile
+      ? [0.98, 0.5, 1.2, 0.4, 1.3, 0.45, 1.0,  2.5, 0.4, 1.3, 0.5]
+      : [1.02, 0.5, 1.4, 0.4, 1.5, 0.45, 1.2,  3.0, 0.4, 1.5, 0.5]
+  );
+
+  // Opacity adjustments:
+  // Is visible during Experience (0.6), massively faded at Projects (0.8 and beyond)
+  const orbMainOpacityRaw = useTransform(
+    fullPageProgress,
+    [0, 0.1, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+    [0.6, 0.25, 0.4, 0.2, 0.5, 0.05, 0.0, 0.0, 0.0] // Fades entirely to 0 at 0.8 (Projects) and stays invisible
+  );
+  
+  // Softer spring configuration for a more floaty, ethereal movement
+  const orbSpringConfig = { damping: 40, stiffness: 45, mass: 1.5 };
+  const orbMainX = useSpring(orbMainXRaw, orbSpringConfig);
+  const orbMainY = useSpring(orbMainYRaw, orbSpringConfig);
+  const orbMainScale = useSpring(orbMainScaleRaw, orbSpringConfig);
+  const orbMainOpacity = useSpring(orbMainOpacityRaw, orbSpringConfig);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -132,14 +201,18 @@ export default function Hero() {
         <Particle key={i} delay={i * 0.5} theme={theme} index={i} />
       ))}
 
-      {/* Interactive WebGL Orb - Centered behind text, extends into next section */}
-      <div
+      {/* Interactive WebGL Orb - Travels entire page weaving through content */}
+      <motion.div
         className="hero-orb"
         style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%)',
+          x: orbMainX,
+          y: orbMainY,
+          translateY: '-50%',
+          scale: orbMainScale,
+          opacity: orbMainOpacity,
           pointerEvents: 'auto',
           zIndex: 0,
         }}
@@ -150,7 +223,7 @@ export default function Hero() {
           rotateOnHover={true}
           backgroundColor="#0a0a0a"
         />
-      </div>
+      </motion.div>
 
       {/* Gradient orb accents */}
       <motion.div
@@ -372,33 +445,37 @@ export default function Hero() {
       </motion.div>
 
       {/* Scroll indicator with bounce */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.5 }}
-        style={{
-          position: 'absolute',
-          bottom: 'clamp(30px, 6vh, 50px)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '8px',
-        }}
-      >
-        <span style={{ fontSize: '10px', letterSpacing: '3px', color: colors.textMuted, textTransform: 'uppercase' }}>
-          Scroll
-        </span>
+      <motion.div style={{ opacity }}>
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.5 }}
           style={{
-            width: '1px',
-            height: '40px',
-            background: theme === 'dark' 
-              ? 'linear-gradient(to bottom, rgba(196, 163, 90, 0.5), transparent)'
-              : 'linear-gradient(to bottom, rgba(13, 148, 136, 0.5), transparent)',
+            position: 'absolute',
+            bottom: 'clamp(30px, 6vh, 50px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '8px',
+            left: '50%',
+            transform: 'translateX(-50%)',
           }}
-        />
+        >
+          <span style={{ fontSize: '10px', letterSpacing: '3px', color: colors.textMuted, textTransform: 'uppercase' }}>
+            Scroll
+          </span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            style={{
+              width: '1px',
+              height: '40px',
+              background: theme === 'dark' 
+                ? 'linear-gradient(to bottom, rgba(196, 163, 90, 0.5), transparent)'
+                : 'linear-gradient(to bottom, rgba(13, 148, 136, 0.5), transparent)',
+            }}
+          />
+        </motion.div>
       </motion.div>
     </section>
   );

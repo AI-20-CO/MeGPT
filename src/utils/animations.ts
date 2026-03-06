@@ -186,3 +186,42 @@ export const slideInRight: Variants = {
   },
 };
 
+// =============================================================================
+// SECTION VIEWPORT ANIMATIONS
+// =============================================================================
+
+/**
+ * Section animation variants for scroll-triggered fade/slide effects
+ * Animates in when entering viewport, out when leaving
+ */
+export const sectionViewportVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 60,
+    scale: 0.98,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.7,
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -40,
+    scale: 0.98,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  },
+};
+
+/** Section viewport animation configuration */
+export const sectionViewportConfig = {
+  amount: 0.2 as const,
+  margin: '-100px' as const,
+};
