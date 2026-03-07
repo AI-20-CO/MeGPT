@@ -124,11 +124,14 @@ export default function Experience() {
           </span>
           <h2
             style={{
-              fontSize: 'clamp(28px, 6vw, 56px)',
-              fontWeight: 200,
+              fontFamily: 'var(--font-syncopate), sans-serif',
+              fontSize: 'clamp(24px, 4vw, 42px)',
+              fontWeight: 400,
+              textTransform: 'uppercase',
               color: colors.text,
               margin: 0,
               lineHeight: 1.2,
+              letterSpacing: '1px',
             }}
           >
             Where I have worked
@@ -166,8 +169,10 @@ export default function Experience() {
               <div>
                 <h3
                   style={{
+                    fontFamily: 'var(--font-syncopate)',
                     fontSize: 'clamp(18px, 4vw, 24px)',
                     fontWeight: 400,
+                    textTransform: 'uppercase',
                     color: colors.text,
                     margin: '0 0 8px 0',
                   }}

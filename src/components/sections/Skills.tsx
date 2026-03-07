@@ -290,11 +290,14 @@ export default function Skills() {
             Tech Stack
           </span>
           <h2 style={{
-            fontSize: 'clamp(32px, 6vw, 56px)',
-            fontWeight: 200,
-            color: colors.text,
-            margin: 0,
-            lineHeight: 1.1,
+              fontFamily: 'var(--font-syncopate), sans-serif',
+              fontSize: 'clamp(24px, 4vw, 42px)',
+              fontWeight: 400,
+              textTransform: 'uppercase',
+              color: colors.text,
+              margin: 0,
+              lineHeight: 1.2,
+              letterSpacing: '1px',
           }}>
             Skills & expertise
           </h2>
@@ -334,11 +337,13 @@ export default function Skills() {
                 color: activeCategory === index 
                   ? category.color 
                   : colors.textMuted,
-                fontSize: 'clamp(13px, 2.5vw, 14px)',
-                fontWeight: 500,
+                fontFamily: 'var(--font-syncopate), sans-serif',
+                fontSize: 'clamp(9px, 1.3vw, 10px)',
+                fontWeight: 600,
+                textTransform: 'uppercase',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
-                letterSpacing: '0.5px',
+                letterSpacing: '0.7px',
                 whiteSpace: 'nowrap',
                 flexShrink: 0,
                 boxSizing: 'border-box',
@@ -381,10 +386,13 @@ export default function Skills() {
             }}
           >
             <h3 style={{
-              fontSize: 'clamp(18px, 4vw, 22px)',
-              fontWeight: 500,
+              fontFamily: 'var(--font-syncopate), sans-serif',
+              fontSize: 'clamp(14px, 2.5vw, 18px)',
+              fontWeight: 400,
+              textTransform: 'uppercase',
               color: skillCategories[activeCategory].color,
               marginBottom: '24px',
+              letterSpacing: '1px',
             }}>
               {skillCategories[activeCategory].title}
             </h3>
@@ -424,11 +432,14 @@ export default function Skills() {
             }}
           >
             <h3 style={{
-              fontSize: 'clamp(18px, 4vw, 22px)',
-              fontWeight: 500,
+              fontFamily: 'var(--font-syncopate), sans-serif',
+              fontSize: 'clamp(14px, 2.5vw, 18px)',
+              fontWeight: 400,
+              textTransform: 'uppercase',
               color: colors.text,
               marginBottom: '20px',
               flexShrink: 0,
+              letterSpacing: '1px',
             }}>
               All Technologies
             </h3>
