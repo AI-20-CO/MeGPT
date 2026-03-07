@@ -5,27 +5,18 @@ import { FluidCursor, LoadingScreen, Hyperspeed } from '@/components/ui';
 import { Sidebar } from '@/components/layout';
 import { Hero, About, Skills, Experience, Projects, Contact } from '@/components/sections';
 import { useScroll, useTransform, motion, useSpring } from 'framer-motion';
-import { useEffect, useState } from 'react';
 
 function MainContent() {
   const { theme } = useTheme();
-  const [windowHeight, setWindowHeight] = useState(1000);
   
-  useEffect(() => {
-    setWindowHeight(window.innerHeight);
-    const handleResize = () => setWindowHeight(window.innerHeight);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Scroll-based opacity for Hyperspeed - starts invisible, fades in, then goes to full brightness at the bottom "Ask" section
+  const { scrollYProgress } = useScroll();
   
-  // Scroll-based opacity for Hyperspeed - starts invisible, fades in as you scroll to About
-  const { scrollY } = useScroll();
-  
-  // Hyperspeed fades in between 0 and 100vh (Hero section height)
+  // Combines initial scroll fade-in with end-of-page full brightness
   const hyperspeedOpacityRaw = useTransform(
-    scrollY,
-    [0, windowHeight * 0.5, windowHeight],
-    [0, 0, 0.4]
+    scrollYProgress,
+    [0, 0.05, 0.1, 0.85, 1],
+    [0, 0, 0.4, 0.4, 1]
   );
   
   // Smooth spring for buttery transition
@@ -74,12 +65,19 @@ function MainContent() {
           minHeight: '100vh',
           position: 'relative',
           zIndex: 1,
-          transition: 'background 0.5s ease',
-          background: theme === 'dark' 
-            ? 'rgba(10, 10, 10, 0.75)' 
-            : 'transparent',
         }}
       >
+        {/* Background Overlay - Fades out before the 100vh padding at the bottom so the "new page" is clear */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: theme === 'dark' 
+            ? 'linear-gradient(to bottom, rgba(10, 10, 10, 0.75) 0%, rgba(10, 10, 10, 0.75) calc(100% - 120vh), transparent calc(100% - 80vh))'
+            : 'transparent',
+          zIndex: -1,
+          pointerEvents: 'none',
+          transition: 'background 0.5s ease',
+        }} />
         <Hero />
         <About />
         <Skills />

@@ -91,7 +91,7 @@ export default function Projects() {
       id="projects"
       ref={ref}
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         padding: 'clamp(60px, 10vw, 80px) clamp(16px, 4vw, 24px)',
         display: 'flex',
         justifyContent: 'center',
@@ -173,11 +173,14 @@ export default function Projects() {
             Projects
           </span>
           <h2 style={{
-            fontSize: 'clamp(32px, 6vw, 56px)',
-            fontWeight: 200,
-            color: colors.text,
-            margin: 0,
-            lineHeight: 1.1,
+              fontFamily: 'var(--font-syncopate), sans-serif',
+              fontSize: 'clamp(24px, 4vw, 42px)',
+              fontWeight: 400,
+              textTransform: 'uppercase',
+              color: colors.text,
+              margin: 0,
+              lineHeight: 1.2,
+              letterSpacing: '1px',
           }}>
             Selected work
           </h2>
@@ -280,7 +283,9 @@ export default function Projects() {
 
                 {/* Title */}
                 <h3 style={{
-                  fontSize: 'clamp(18px, 3vw, 22px)',
+                  fontFamily: 'var(--font-syncopate)',
+                  textTransform: 'uppercase',
+                  fontSize: 'clamp(15px, 2.5vw, 18px)',
                   fontWeight: 500,
                   color: hoveredIndex === index 
                     ? (theme === 'dark' ? '#fff' : '#111')

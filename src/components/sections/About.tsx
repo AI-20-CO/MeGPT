@@ -23,7 +23,7 @@ export default function About() {
       id="about"
       ref={ref}
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         padding: 'clamp(60px, 10vw, 80px) clamp(16px, 4vw, 24px)',
         display: 'flex',
         justifyContent: 'center',
@@ -108,11 +108,14 @@ export default function About() {
           </span>
           <h2
             style={{
-              fontSize: 'clamp(28px, 6vw, 56px)',
-              fontWeight: 200,
+              fontFamily: 'var(--font-syncopate), sans-serif',
+              fontSize: 'clamp(24px, 4vw, 42px)',
+              fontWeight: 400,
+              textTransform: 'uppercase',
               color: colors.text,
               margin: 0,
               lineHeight: 1.2,
+              letterSpacing: '1px',
             }}
           >
             Building the future,
@@ -189,6 +192,7 @@ export default function About() {
           >
             <h3
               style={{
+                fontFamily: 'var(--font-syncopate)',
                 fontSize: 'clamp(10px, 2vw, 12px)',
                 fontWeight: 600,
                 color: colors.silver,
@@ -228,6 +232,7 @@ export default function About() {
           >
             <h3
               style={{
+                fontFamily: 'var(--font-syncopate)',
                 fontSize: 'clamp(10px, 2vw, 12px)',
                 fontWeight: 600,
                 color: theme === 'dark' ? 'rgba(196, 163, 90, 0.6)' : 'rgba(13, 148, 136, 0.8)',

@@ -6,32 +6,11 @@ import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
 import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
 
-// Animated line component
-function AnimatedLine({ delay, theme }: { delay: number; theme: string }) {
-  return (
-    <motion.div
-      initial={{ scaleX: 0, opacity: 0 }}
-      animate={{ scaleX: 1, opacity: 0.1 }}
-      transition={{ duration: 1.5, delay, ease: 'easeOut' }}
-      style={{
-        position: 'absolute',
-        height: '1px',
-        width: '100%',
-        background: theme === 'dark' 
-          ? 'linear-gradient(90deg, transparent, rgba(196, 163, 90, 0.3), transparent)'
-          : 'linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.3), transparent)',
-        transformOrigin: 'center',
-      }}
-    />
-  );
-}
-
 export default function Contact() {
   const ref = useRef(null);
   const { theme, colors } = useTheme();
   const isInView = useInView(ref, { amount: 0.35 });
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
-  const [isEmailHovered, setIsEmailHovered] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -96,8 +75,9 @@ export default function Contact() {
       id="contact"
       ref={ref}
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         padding: 'clamp(60px, 12vw, 100px) clamp(16px, 4vw, 24px)',
+        paddingBottom: '100vh', // Massive bottom padding to allow a full empty screen at the bottom
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -110,14 +90,6 @@ export default function Contact() {
       <FloatingOrb delay={0} duration={9} size={300} left="10%" top="20%" color={orbColor1} />
       <FloatingOrb delay={2} duration={11} size={220} left="75%" top="50%" color={orbColor2} />
       <FloatingOrb delay={4} duration={13} size={250} left="45%" top="70%" color={orbColor3} />
-      
-      {/* Decorative lines */}
-      <div style={{ position: 'absolute', top: '30%', width: '100%' }}>
-        <AnimatedLine delay={0.5} theme={theme} />
-      </div>
-      <div style={{ position: 'absolute', top: '70%', width: '100%' }}>
-        <AnimatedLine delay={0.8} theme={theme} />
-      </div>
       
       {/* Animated gradient overlay */}
       <motion.div
@@ -172,11 +144,14 @@ export default function Contact() {
           </span>
           <h2
             style={{
-              fontSize: 'clamp(36px, 8vw, 72px)',
-              fontWeight: 200,
+              fontFamily: 'var(--font-syncopate), sans-serif',
+              fontSize: 'clamp(24px, 4vw, 42px)',
+              fontWeight: 400,
+              textTransform: 'uppercase',
               color: colors.text,
               margin: '0 0 24px 0',
-              lineHeight: 1.1,
+              lineHeight: 1.2,
+              letterSpacing: '1px',
               transition: 'color 0.5s ease',
             }}
           >
@@ -300,90 +275,6 @@ export default function Contact() {
               </span>
             </motion.a>
           ))}
-        </motion.div>
-
-        {/* Large CTA Email */}
-        <motion.div
-          variants={createVariants('bottom', 60)}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-        >
-          <motion.a
-            href="mailto:ayaan.izhar01@gmail.com"
-            onMouseEnter={() => setIsEmailHovered(true)}
-            onMouseLeave={() => setIsEmailHovered(false)}
-            whileHover={{ scale: 1.03 }}
-            style={{
-              fontSize: 'clamp(24px, 5vw, 42px)',
-              fontWeight: 300,
-              color: isEmailHovered ? (theme === 'dark' ? '#e8d5a3' : '#d4b86a') : colors.gold,
-              textDecoration: 'none',
-              display: 'inline-block',
-              cursor: 'pointer',
-              position: 'relative',
-              transition: 'all 0.3s ease',
-            }}
-          >
-            ayaan.izhar01@gmail.com
-            
-            {/* Underline effect */}
-            <motion.span
-              animate={{ 
-                scaleX: isEmailHovered ? 1 : 0,
-                opacity: isEmailHovered ? 1 : 0,
-              }}
-              transition={{ duration: 0.3 }}
-              style={{
-                position: 'absolute',
-                bottom: '-4px',
-                left: 0,
-                right: 0,
-                height: '2px',
-                background: `linear-gradient(90deg, transparent, ${colors.gold}, transparent)`,
-                transformOrigin: 'center',
-              }}
-            />
-          </motion.a>
-        </motion.div>
-
-        {/* Decorative bottom element */}
-        <motion.div
-          variants={createVariants('center', 0)}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          style={{
-            marginTop: '80px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '16px',
-          }}
-        >
-          <motion.div
-            animate={{ scaleX: [0, 1, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            style={{
-              width: '60px',
-              height: '1px',
-              background: `linear-gradient(90deg, transparent, ${colors.gold}, transparent)`,
-            }}
-          />
-          <div style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            background: colors.gold,
-            opacity: 0.6,
-          }} />
-          <motion.div
-            animate={{ scaleX: [0, 1, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-            style={{
-              width: '60px',
-              height: '1px',
-              background: `linear-gradient(90deg, transparent, ${colors.gold}, transparent)`,
-            }}
-          />
         </motion.div>
       </motion.div>
     </section>

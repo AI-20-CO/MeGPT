@@ -120,11 +120,11 @@ export default function Hero() {
   // Weaves delicately, but centers during Experience (0.6) then expands away
   const orbMainXRaw = useTransform(
     fullPageProgress,
-    [0, 0.2, 0.4, 0.6, 0.8, 1],
+    [0, 0.2, 0.4, 0.46, 0.55, 0.7, 0.8, 1],
     // If mobile, keep it more centered due to limited width
     isMobile 
-      ? ['-50%', '-50%', '-50%', '-50%', '-50%', '-50%']
-      : ['-50%', '-20%', '-80%', '-50%', '-75%', '-50%']
+      ? ['-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%']
+      : ['-50%', '-20%', '-105%', '-105%', '-50%', '-50%', '-75%', '-50%']
   );
 
   // Y-Position: Carefully calibrated to sync with viewports
@@ -132,21 +132,21 @@ export default function Hero() {
   // Using vh units mapping to ensure it stays in the viewport regardless of device height
   const orbMainYRaw = useTransform(
     fullPageProgress, 
-    [0, 0.2, 0.4, 0.6, 0.8, 1], 
+    [0, 0.2, 0.4, 0.46, 0.55, 0.7, 0.8, 1], 
     isMobile
-      ? ['0vh', '100vh', '200vh', '300vh', '400vh', '500vh']
-      : ['0vh', '120vh', '240vh', '360vh', '480vh', '600vh']
+      ? ['0vh', '100vh', '200vh', '200vh', '330vh', '350vh', '400vh', '500vh']
+      : ['0vh', '120vh', '240vh', '240vh', '380vh', '410vh', '480vh', '600vh']
   );
   
   // Breaths dynamically. Around Experience (0.6), it centers and is medium size.
   // Between Experience (0.6) and Projects (0.8), it expands massively as a transition
   const orbMainScaleRaw = useTransform(
     fullPageProgress, 
-    [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], 
+    [0, 0.1, 0.2, 0.3, 0.4, 0.46, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1], 
     // Mobile uses slightly smaller scales to prevent overflow issues. Hero (0) is adjusted slightly larger now.
     isMobile
-      ? [0.98, 0.5, 1.2, 0.4, 1.3, 0.45, 1.0,  2.5, 0.4, 1.3, 0.5]
-      : [1.02, 0.5, 1.4, 0.4, 1.5, 0.45, 1.2,  3.0, 0.4, 1.5, 0.5]
+      ? [0.98, 0.5, 1.2, 0.5, 1.4, 1.4, 0.45, 1.3, 1.6, 2.0, 0.4, 1.3, 0.5]
+      : [1.02, 0.5, 1.4, 0.5, 1.8, 1.8, 0.45, 1.4, 2.0, 2.4, 0.4, 1.5, 0.5]
   );
 
   // Opacity adjustments:
@@ -184,7 +184,7 @@ export default function Hero() {
       id="home"
       ref={ref}
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -365,15 +365,19 @@ export default function Hero() {
         {/* Name with character animation */}
         <motion.h1
           style={{
-            fontSize: 'clamp(48px, 12vw, 120px)',
-            fontWeight: 200,
+            fontFamily: 'var(--font-syncopate), sans-serif',
+            fontSize: 'clamp(30px, 6.5vw, 72px)',
+            fontWeight: 400,
+            textTransform: 'uppercase',
             color: colors.text,
             margin: 0,
-            lineHeight: 1,
-            letterSpacing: '-2px',
+            lineHeight: 1.1,
+            letterSpacing: 'clamp(2px, 2vw, 10px)',
+            textShadow: '0 0 15px rgba(255,255,255,0.2), 0 0 30px rgba(196,163,90,0.1)',
+            WebkitFontSmoothing: 'antialiased',
           }}
         >
-          <AnimatedText text="Ayaan Izhar" delay={0.5} color={colors.text} />
+          <AnimatedText text="AYAAN IZHAR" delay={0.5} color={colors.text} />
         </motion.h1>
 
         {/* Role with gradient */}
@@ -385,22 +389,37 @@ export default function Hero() {
             marginTop: 'clamp(16px, 3vw, 24px)',
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
+            gap: 'clamp(8px, 2vw, 16px)',
             flexWrap: 'wrap',
             justifyContent: 'center',
+            width: '100%',
           }}
         >
           <motion.span
             style={{
-              fontSize: 'clamp(16px, 3vw, 22px)',
-              fontWeight: 300,
+              fontFamily: 'var(--font-syncopate), sans-serif',
+              fontSize: 'clamp(9px, 1.5vw, 14px)',
+              fontWeight: 400,
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
               color: colors.gold,
+              textShadow: '0 0 10px rgba(196, 163, 90, 0.2)',
+              whiteSpace: 'nowrap',
             }}
           >
             Software Engineer
           </motion.span>
           <span style={{ color: colors.textMuted }}>•</span>
-          <span style={{ fontSize: 'clamp(14px, 2.5vw, 18px)', color: colors.textMuted, fontWeight: 300 }}>
+          <span style={{ 
+            fontFamily: 'var(--font-syncopate), sans-serif',
+            fontSize: 'clamp(9px, 1.5vw, 14px)', 
+            color: colors.textMuted, 
+            fontWeight: 400,
+            textTransform: 'uppercase',
+            letterSpacing: '1.5px', 
+            textShadow: '0 0 10px rgba(255, 255, 255, 0.1)',
+            whiteSpace: 'nowrap',
+          }}>
             Full-Stack Developer
           </span>
         </motion.div>
@@ -413,10 +432,11 @@ export default function Hero() {
           style={{
             marginTop: 'clamp(24px, 5vw, 40px)',
             fontSize: 'clamp(14px, 2.5vw, 18px)',
-            color: colors.textMuted,
+            color: 'rgba(255, 255, 255, 0.75)',
             lineHeight: 1.8,
             maxWidth: 600,
-            fontWeight: 300,
+            fontWeight: 400,
+            textShadow: '0 0 10px rgba(0,0,0,0.5)',
           }}
         >
           I like turning complex problems into elegant code and pixels into experiences people actually enjoy using.
@@ -452,7 +472,7 @@ export default function Hero() {
           transition={{ delay: 2.5 }}
           style={{
             position: 'absolute',
-            bottom: 'clamp(30px, 6vh, 50px)',
+            bottom: isMobile ? 'clamp(90px, 12dvh, 120px)' : 'clamp(30px, 6dvh, 50px)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -524,12 +544,12 @@ function MagneticButton({ children, href, primary = false }: { children: React.R
       style={{
         x,
         y,
-        padding: primary ? '18px 40px' : '18px 36px',
-        borderRadius: '14px',
+        padding: primary ? '14px 24px' : '14px 20px',
+        borderRadius: '12px',
         background: primary 
           ? theme === 'dark'
-            ? 'linear-gradient(135deg, rgba(196, 163, 90, 0.15) 0%, rgba(196, 163, 90, 0.08) 100%)'
-            : 'linear-gradient(135deg, rgba(13, 148, 136, 0.12) 0%, rgba(13, 148, 136, 0.06) 100%)'
+            ? 'linear-gradient(135deg, rgba(196, 163, 90, 0.15) 0%, rgba(196, 163, 90, 0.08) 100%)' 
+            : 'linear-gradient(135deg, rgba(13, 148, 136, 0.12) 0%, rgba(13, 148, 136, 0.06) 100%)' 
           : theme === 'dark'
             ? 'rgba(255, 255, 255, 0.03)'
             : 'rgba(0, 0, 0, 0.03)',
@@ -541,10 +561,12 @@ function MagneticButton({ children, href, primary = false }: { children: React.R
             ? '1px solid rgba(255, 255, 255, 0.12)'
             : '1px solid rgba(0, 0, 0, 0.12)',
         color: primary ? colors.gold : colors.textMuted,
-        fontSize: '14px',
-        fontWeight: 500,
+        fontFamily: 'var(--font-syncopate), sans-serif',
+        fontSize: '11px',
+        fontWeight: 400,
+        textTransform: 'uppercase',
         textDecoration: 'none',
-        letterSpacing: '0.5px',
+        letterSpacing: '1.5px',
         cursor: 'pointer',
         display: 'inline-block',
         position: 'relative',
@@ -554,7 +576,7 @@ function MagneticButton({ children, href, primary = false }: { children: React.R
         scale: 1.08,
         boxShadow: primary 
           ? theme === 'dark'
-            ? '0 0 60px rgba(196, 163, 90, 0.4), 0 0 100px rgba(196, 163, 90, 0.2), inset 0 0 30px rgba(196, 163, 90, 0.1)'
+            ? '0 0 60px rgba(196, 163, 90, 0.4), 0 0 100px rgba(196, 163, 90, 0.2), inset 0 0 30px rgba(196, 163, 90, 0.1)' 
             : '0 0 60px rgba(13, 148, 136, 0.3), 0 0 100px rgba(13, 148, 136, 0.15), inset 0 0 30px rgba(13, 148, 136, 0.08)'
           : theme === 'dark'
             ? '0 0 40px rgba(255, 255, 255, 0.15), 0 0 80px rgba(255, 255, 255, 0.05)'
@@ -567,7 +589,7 @@ function MagneticButton({ children, href, primary = false }: { children: React.R
         scale: 0.95,
         boxShadow: primary 
           ? theme === 'dark'
-            ? '0 0 80px rgba(196, 163, 90, 0.6), inset 0 0 40px rgba(196, 163, 90, 0.3)'
+            ? '0 0 80px rgba(196, 163, 90, 0.6), inset 0 0 40px rgba(196, 163, 90, 0.3)' 
             : '0 0 80px rgba(13, 148, 136, 0.4), inset 0 0 40px rgba(13, 148, 136, 0.2)'
           : theme === 'dark'
             ? '0 0 60px rgba(255, 255, 255, 0.3)'
@@ -591,7 +613,7 @@ function MagneticButton({ children, href, primary = false }: { children: React.R
           width: '50%',
           height: '100%',
           background: `linear-gradient(90deg, transparent, ${primary 
-            ? theme === 'dark' ? 'rgba(196, 163, 90, 0.3)' : 'rgba(13, 148, 136, 0.25)'
+            ? theme === 'dark' ? 'rgba(196, 163, 90, 0.3)' : 'rgba(13, 148, 136, 0.25)' 
             : theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'
           }, transparent)`,
           pointerEvents: 'none',
@@ -610,7 +632,7 @@ function MagneticButton({ children, href, primary = false }: { children: React.R
             inset: -2,
             borderRadius: '16px',
             border: `2px solid ${primary 
-              ? theme === 'dark' ? 'rgba(196, 163, 90, 0.5)' : 'rgba(13, 148, 136, 0.4)'
+              ? theme === 'dark' ? 'rgba(196, 163, 90, 0.5)' : 'rgba(13, 148, 136, 0.4)' 
               : theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)'
             }`,
             pointerEvents: 'none',
