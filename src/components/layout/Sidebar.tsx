@@ -121,8 +121,8 @@ export default function Sidebar() {
   return (
     <>
       <motion.nav
-        initial={isDock ? { opacity: 0, y: 20 } : { opacity: 0, x: -20 }}
-        animate={isDock ? { opacity: 1, y: 0 } : { opacity: 1, x: 0 }}
+        initial={isDock ? { opacity: 0, y: 20, x: '-50%' } : { opacity: 0, x: -20, y: 0 }}
+        animate={isDock ? { opacity: 1, y: 0, x: '-50%' } : { opacity: 1, x: 0, y: 0 }}
         transition={{ duration: 0.8, delay: 0.5 }}
         onMouseEnter={() => { if (!isMobile) setIsExpanded(true); }}
         onMouseLeave={() => { if (!isMobile) setIsExpanded(false); }}
@@ -131,8 +131,7 @@ export default function Sidebar() {
           position: 'fixed',
           ...(isDock ? {
             bottom: 'calc(24px + env(safe-area-inset-bottom))',
-            left: 0,
-            right: 0,
+            left: '50%',
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',

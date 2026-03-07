@@ -75,7 +75,7 @@ export default function Contact() {
       id="contact"
       ref={ref}
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         padding: 'clamp(60px, 12vw, 100px) clamp(16px, 4vw, 24px)',
         paddingBottom: '100vh', // Massive bottom padding to allow a full empty screen at the bottom
         display: 'flex',

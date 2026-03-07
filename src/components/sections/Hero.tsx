@@ -120,11 +120,11 @@ export default function Hero() {
   // Weaves delicately, but centers during Experience (0.6) then expands away
   const orbMainXRaw = useTransform(
     fullPageProgress,
-    [0, 0.2, 0.4, 0.6, 0.8, 1],
+    [0, 0.2, 0.4, 0.46, 0.55, 0.7, 0.8, 1],
     // If mobile, keep it more centered due to limited width
     isMobile 
-      ? ['-50%', '-50%', '-50%', '-50%', '-50%', '-50%']
-      : ['-50%', '-20%', '-80%', '-50%', '-75%', '-50%']
+      ? ['-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%']
+      : ['-50%', '-20%', '-105%', '-105%', '-50%', '-50%', '-75%', '-50%']
   );
 
   // Y-Position: Carefully calibrated to sync with viewports
@@ -132,21 +132,21 @@ export default function Hero() {
   // Using vh units mapping to ensure it stays in the viewport regardless of device height
   const orbMainYRaw = useTransform(
     fullPageProgress, 
-    [0, 0.2, 0.4, 0.6, 0.8, 1], 
+    [0, 0.2, 0.4, 0.46, 0.55, 0.7, 0.8, 1], 
     isMobile
-      ? ['0vh', '100vh', '200vh', '300vh', '400vh', '500vh']
-      : ['0vh', '120vh', '240vh', '360vh', '480vh', '600vh']
+      ? ['0vh', '100vh', '200vh', '200vh', '330vh', '350vh', '400vh', '500vh']
+      : ['0vh', '120vh', '240vh', '240vh', '380vh', '410vh', '480vh', '600vh']
   );
   
   // Breaths dynamically. Around Experience (0.6), it centers and is medium size.
   // Between Experience (0.6) and Projects (0.8), it expands massively as a transition
   const orbMainScaleRaw = useTransform(
     fullPageProgress, 
-    [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], 
+    [0, 0.1, 0.2, 0.3, 0.4, 0.46, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1], 
     // Mobile uses slightly smaller scales to prevent overflow issues. Hero (0) is adjusted slightly larger now.
     isMobile
-      ? [0.98, 0.5, 1.2, 0.4, 1.3, 0.45, 1.0,  2.5, 0.4, 1.3, 0.5]
-      : [1.02, 0.5, 1.4, 0.4, 1.5, 0.45, 1.2,  3.0, 0.4, 1.5, 0.5]
+      ? [0.98, 0.5, 1.2, 0.5, 1.4, 1.4, 0.45, 1.3, 1.6, 2.0, 0.4, 1.3, 0.5]
+      : [1.02, 0.5, 1.4, 0.5, 1.8, 1.8, 0.45, 1.4, 2.0, 2.4, 0.4, 1.5, 0.5]
   );
 
   // Opacity adjustments:
@@ -184,7 +184,7 @@ export default function Hero() {
       id="home"
       ref={ref}
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -372,7 +372,7 @@ export default function Hero() {
             color: colors.text,
             margin: 0,
             lineHeight: 1.1,
-            letterSpacing: '10px',
+            letterSpacing: 'clamp(2px, 2vw, 10px)',
             textShadow: '0 0 15px rgba(255,255,255,0.2), 0 0 30px rgba(196,163,90,0.1)',
             WebkitFontSmoothing: 'antialiased',
           }}
@@ -390,7 +390,7 @@ export default function Hero() {
             display: 'flex',
             alignItems: 'center',
             gap: 'clamp(8px, 2vw, 16px)',
-            flexWrap: 'nowrap',
+            flexWrap: 'wrap',
             justifyContent: 'center',
             width: '100%',
           }}
@@ -472,7 +472,7 @@ export default function Hero() {
           transition={{ delay: 2.5 }}
           style={{
             position: 'absolute',
-            bottom: 'clamp(30px, 6vh, 50px)',
+            bottom: isMobile ? 'clamp(90px, 12dvh, 120px)' : 'clamp(30px, 6dvh, 50px)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',

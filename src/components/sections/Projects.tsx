@@ -91,7 +91,7 @@ export default function Projects() {
       id="projects"
       ref={ref}
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         padding: 'clamp(60px, 10vw, 80px) clamp(16px, 4vw, 24px)',
         display: 'flex',
         justifyContent: 'center',
