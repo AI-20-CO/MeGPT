@@ -75,7 +75,13 @@ export default function Hero() {
   const { theme, colors } = useTheme();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const [isMobileParticles, setIsMobileParticles] = useState(false);
   const [particles] = useState(() => Array.from({ length: 20 }, (_, i) => i));
+  
+  // Check for mobile on mount for particle count
+  useEffect(() => {
+    setIsMobileParticles(window.innerWidth <= 768);
+  }, []);
   
   // Hero section scroll progress (for text opacity/scale)
   const { scrollYProgress } = useScroll({
@@ -151,14 +157,17 @@ export default function Hero() {
 
   // Opacity adjustments:
   // Is visible during Experience (0.6), massively faded at Projects (0.8 and beyond)
+  // Mobile uses lower opacity for cleaner, more professional look
   const orbMainOpacityRaw = useTransform(
     fullPageProgress,
     [0, 0.1, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-    [0.6, 0.25, 0.4, 0.2, 0.5, 0.05, 0.0, 0.0, 0.0] // Fades entirely to 0 at 0.8 (Projects) and stays invisible
+    isMobile
+      ? [0.4, 0.15, 0.25, 0.12, 0.35, 0.03, 0.0, 0.0, 0.0] // Lower opacity on mobile
+      : [0.6, 0.25, 0.4, 0.2, 0.5, 0.05, 0.0, 0.0, 0.0] // Fades entirely to 0 at 0.8 (Projects) and stays invisible
   );
   
-  // Softer spring configuration for a more floaty, ethereal movement
-  const orbSpringConfig = { damping: 40, stiffness: 45, mass: 1.5 };
+  // Faster settling spring config - higher damping, lower mass for less oscillation
+  const orbSpringConfig = { damping: 60, stiffness: 80, mass: 0.8, restDelta: 0.001 };
   const orbMainX = useSpring(orbMainXRaw, orbSpringConfig);
   const orbMainY = useSpring(orbMainYRaw, orbSpringConfig);
   const orbMainScale = useSpring(orbMainScaleRaw, orbSpringConfig);
@@ -196,8 +205,8 @@ export default function Hero() {
         transition: 'background 0.5s ease',
       }}
     >
-      {/* Floating particles */}
-      {particles.map((i) => (
+      {/* Floating particles - fewer on mobile */}
+      {particles.slice(0, isMobileParticles ? 8 : 20).map((i) => (
         <Particle key={i} delay={i * 0.5} theme={theme} index={i} />
       ))}
 
@@ -211,8 +220,10 @@ export default function Hero() {
           x: orbMainX,
           y: orbMainY,
           translateY: '-50%',
+          translateZ: 0, // Force GPU hardware acceleration
           scale: orbMainScale,
           opacity: orbMainOpacity,
+          willChange: 'transform, opacity', // Hint browser to optimize layout
           pointerEvents: 'auto',
           zIndex: 0,
         }}

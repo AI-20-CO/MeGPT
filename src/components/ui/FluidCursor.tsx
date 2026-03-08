@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function FluidCursor() {
   const { theme } = useTheme();
+  const [isTouchDevice, setIsTouchDevice] = useState(true); // Default to true to prevent flash
   const cursorRef = useRef<HTMLDivElement>(null);
   const cursorOuterRef = useRef<HTMLDivElement>(null);
   
@@ -28,10 +29,11 @@ export default function FluidCursor() {
   const outerOpacity = useSpring(0.5, { damping: 20, stiffness: 300 });
 
   useEffect(() => {
-    // Check for touch device
-    if (window.matchMedia('(pointer: coarse)').matches) {
-      return;
-    }
+    // Check for touch device on mount
+    const isTouch = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768;
+    setIsTouchDevice(isTouch);
+    
+    if (isTouch) return;
 
     let velocityX = 0;
     let velocityY = 0;
@@ -107,8 +109,8 @@ export default function FluidCursor() {
     };
   }, [mouseX, mouseY, scaleX, scaleY, outerScale, outerOpacity]);
 
-  // Don't render on touch devices
-  if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
+  // Don't render on touch/mobile devices
+  if (isTouchDevice) {
     return null;
   }
 

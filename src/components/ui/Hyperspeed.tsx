@@ -756,7 +756,10 @@ class App {
       container.offsetHeight,
       false
     );
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    // Cap DPR on mobile for better performance
+    const isMobile = window.innerWidth < 768;
+    const maxDpr = isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
+    this.renderer.setPixelRatio(maxDpr);
 
     this.composer = new EffectComposer(this.renderer);
     container.appendChild(this.renderer.domElement);

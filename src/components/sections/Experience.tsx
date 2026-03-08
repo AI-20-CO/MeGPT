@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
 import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
@@ -26,13 +26,19 @@ export default function Experience() {
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.35 });
   const { theme, colors } = useTheme();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], [80, -80]);
+  // Skip parallax on mobile
+  const y = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [80, -80]);
 
   return (
     <section
@@ -75,26 +81,28 @@ export default function Experience() {
         color={theme === 'dark' ? 'rgba(196, 163, 90, 0.07)' : 'rgba(13, 148, 136, 0.05)'} 
       />
       
-      {/* Animated gradient overlay */}
-      <motion.div
-        animate={{
-          background: theme === 'dark' ? [
-            'radial-gradient(ellipse at 70% 20%, rgba(192, 192, 192, 0.04) 0%, transparent 50%)',
-            'radial-gradient(ellipse at 30% 80%, rgba(192, 192, 192, 0.04) 0%, transparent 50%)',
-            'radial-gradient(ellipse at 70% 20%, rgba(192, 192, 192, 0.04) 0%, transparent 50%)',
-          ] : [
-            'radial-gradient(ellipse at 70% 20%, rgba(100, 100, 100, 0.03) 0%, transparent 50%)',
-            'radial-gradient(ellipse at 30% 80%, rgba(100, 100, 100, 0.03) 0%, transparent 50%)',
-            'radial-gradient(ellipse at 70% 20%, rgba(100, 100, 100, 0.03) 0%, transparent 50%)',
-          ],
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-        }}
-      />
+      {/* Animated gradient overlay - disabled on mobile */}
+      {!isMobile && (
+        <motion.div
+          animate={{
+            background: theme === 'dark' ? [
+              'radial-gradient(ellipse at 70% 20%, rgba(192, 192, 192, 0.04) 0%, transparent 50%)',
+              'radial-gradient(ellipse at 30% 80%, rgba(192, 192, 192, 0.04) 0%, transparent 50%)',
+              'radial-gradient(ellipse at 70% 20%, rgba(192, 192, 192, 0.04) 0%, transparent 50%)',
+            ] : [
+              'radial-gradient(ellipse at 70% 20%, rgba(100, 100, 100, 0.03) 0%, transparent 50%)',
+              'radial-gradient(ellipse at 30% 80%, rgba(100, 100, 100, 0.03) 0%, transparent 50%)',
+              'radial-gradient(ellipse at 70% 20%, rgba(100, 100, 100, 0.03) 0%, transparent 50%)',
+            ],
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
 
       <motion.div
         variants={sectionViewportVariants}
