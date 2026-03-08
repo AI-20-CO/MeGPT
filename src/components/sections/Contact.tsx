@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
 import { createVariants, containerVariants, sectionViewportVariants, sectionViewportConfig } from '@/utils/animations';
@@ -11,14 +11,20 @@ export default function Contact() {
   const { theme, colors } = useTheme();
   const isInView = useInView(ref, { amount: 0.35 });
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
+  // Skip transforms on mobile
+  const y = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [50, -50]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], isMobile ? [1, 1, 1] : [0.95, 1, 0.95]);
 
   const contactLinks = [
     { 
@@ -91,22 +97,24 @@ export default function Contact() {
       <FloatingOrb delay={2} duration={11} size={220} left="75%" top="50%" color={orbColor2} />
       <FloatingOrb delay={4} duration={13} size={250} left="45%" top="70%" color={orbColor3} />
       
-      {/* Animated gradient overlay */}
-      <motion.div
-        animate={{
-          background: [
-            `radial-gradient(ellipse at 30% 40%, ${theme === 'dark' ? 'rgba(196, 163, 90, 0.05)' : 'rgba(13, 148, 136, 0.008)' } 0%, transparent 50%)`,
-            `radial-gradient(ellipse at 70% 60%, ${theme === 'dark' ? 'rgba(196, 163, 90, 0.05)' : 'rgba(13, 148, 136, 0.008)'} 0%, transparent 50%)`,
-            `radial-gradient(ellipse at 30% 40%, ${theme === 'dark' ? 'rgba(196, 163, 90, 0.05)' : 'rgba(13, 148, 136, 0.008)'} 0%, transparent 50%)`,
-          ],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-        }}
-      />
+      {/* Animated gradient overlay - disabled on mobile */}
+      {!isMobile && (
+        <motion.div
+          animate={{
+            background: [
+              `radial-gradient(ellipse at 30% 40%, ${theme === 'dark' ? 'rgba(196, 163, 90, 0.05)' : 'rgba(13, 148, 136, 0.008)' } 0%, transparent 50%)`,
+              `radial-gradient(ellipse at 70% 60%, ${theme === 'dark' ? 'rgba(196, 163, 90, 0.05)' : 'rgba(13, 148, 136, 0.008)'} 0%, transparent 50%)`,
+              `radial-gradient(ellipse at 30% 40%, ${theme === 'dark' ? 'rgba(196, 163, 90, 0.05)' : 'rgba(13, 148, 136, 0.008)'} 0%, transparent 50%)`,
+            ],
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
 
       <motion.div
         variants={sectionViewportVariants}

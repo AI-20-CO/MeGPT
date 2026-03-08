@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 export interface FloatingOrbProps {
   /** Animation delay in seconds */
@@ -20,6 +21,7 @@ export interface FloatingOrbProps {
 /**
  * Floating animated orb component used for background decoration
  * Creates a subtle floating animation with a blurred radial gradient
+ * Disabled on mobile for performance
  */
 export default function FloatingOrb({
   delay,
@@ -29,6 +31,15 @@ export default function FloatingOrb({
   top,
   color,
 }: FloatingOrbProps) {
+  const [isMobile, setIsMobile] = useState(true); // Default true to avoid flash
+  
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+  }, []);
+  
+  // Don't render on mobile - these cause significant performance issues
+  if (isMobile) return null;
+  
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0 }}
@@ -54,6 +65,7 @@ export default function FloatingOrb({
         top,
         filter: 'blur(40px)',
         pointerEvents: 'none',
+        willChange: 'transform, opacity',
       }}
     />
   );

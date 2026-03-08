@@ -224,7 +224,10 @@ export default function Orb({
 
     function resize() {
       if (!container) return;
-      const dpr = window.devicePixelRatio || 1;
+      // Cap DPR to drastically improve mobile performance (reduces pixel rendering by up to 9x on phones)
+      const isMobile = window.innerWidth < 768;
+      const maxDpr = isMobile ? 1 : 1.5;
+      const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
       const width = container.clientWidth;
       const height = container.clientHeight;
       renderer.setSize(width * dpr, height * dpr);
@@ -239,6 +242,8 @@ export default function Orb({
     let lastTime = 0;
     let currentRot = 0;
     const rotationSpeed = 0.3;
+    const isMobileDevice = window.innerWidth < 768;
+    let frameCount = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
@@ -269,6 +274,11 @@ export default function Orb({
     let rafId: number;
     const update = (t: number) => {
       rafId = requestAnimationFrame(update);
+      
+      // Throttle to ~30fps on mobile (skip every other frame)
+      frameCount++;
+      if (isMobileDevice && frameCount % 2 !== 0) return;
+      
       const dt = (t - lastTime) * 0.001;
       lastTime = t;
       program.uniforms.iTime.value = t * 0.001;
