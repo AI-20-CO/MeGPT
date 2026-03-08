@@ -167,7 +167,10 @@ export default function Hero() {
   );
   
   // Faster settling spring config - higher damping, lower mass for less oscillation
-  const orbSpringConfig = { damping: 60, stiffness: 80, mass: 0.8, restDelta: 0.001 };
+  // On mobile, use extremely high damping to eliminate bounce/glitch on scroll start
+  const orbSpringConfig = isMobile 
+    ? { damping: 100, stiffness: 300, mass: 0.1, restDelta: 0.01 } // Near-instant on mobile
+    : { damping: 60, stiffness: 80, mass: 0.8, restDelta: 0.001 };
   const orbMainX = useSpring(orbMainXRaw, orbSpringConfig);
   const orbMainY = useSpring(orbMainYRaw, orbSpringConfig);
   const orbMainScale = useSpring(orbMainScaleRaw, orbSpringConfig);

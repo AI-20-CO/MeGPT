@@ -5,9 +5,15 @@ import { FluidCursor, LoadingScreen, Hyperspeed } from '@/components/ui';
 import { Sidebar } from '@/components/layout';
 import { Hero, About, Skills, Experience, Projects, Contact } from '@/components/sections';
 import { useScroll, useTransform, motion, useSpring } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 function MainContent() {
   const { theme } = useTheme();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+  }, []);
   
   // Scroll-based opacity for Hyperspeed - starts invisible, fades in, then goes to full brightness at the bottom "Ask" section
   const { scrollYProgress } = useScroll();
@@ -19,12 +25,11 @@ function MainContent() {
     [0, 0, 0.4, 0.4, 1]
   );
   
-  // Smooth spring for buttery transition
-  const hyperspeedOpacity = useSpring(hyperspeedOpacityRaw, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
+  // On mobile, use near-instant response to prevent scroll jitter
+  const hyperspeedOpacity = useSpring(hyperspeedOpacityRaw, isMobile 
+    ? { stiffness: 300, damping: 100, restDelta: 0.01 }
+    : { stiffness: 100, damping: 30, restDelta: 0.001 }
+  );
   
   return (
     <>

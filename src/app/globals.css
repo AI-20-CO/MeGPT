@@ -27,6 +27,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Disable smooth scroll on touch devices - can cause scroll glitches */
+@media (pointer: coarse) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -37,6 +44,7 @@ body {
   overflow-x: hidden;
   cursor: none;
   max-width: 100vw;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Prevent horizontal scroll globally */
@@ -97,6 +105,14 @@ a {
 @media (pointer: coarse) {
   .fluid-cursor {
     display: none !important;
+  }
+}
+
+/* ===== MOBILE SCROLL OPTIMIZATION ===== */
+@media (pointer: coarse), (max-width: 768px) {
+  /* Prevent any element from blocking scroll */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
