@@ -328,9 +328,7 @@ export default function Hero() {
           zIndex: 1,
           opacity,
           scale,
-          rotateX: smoothMouseY,
-          rotateY: smoothMouseX,
-          transformPerspective: 1000,
+          ...(isMobile ? {} : { rotateX: smoothMouseY, rotateY: smoothMouseX, transformPerspective: 1000 }),
         }}
       >
         {/* Status badge with glow */}

@@ -44,7 +44,7 @@ const projects = [
 ];
 
 // 3D Tilt Card Component
-function TiltCard({ children }: { children: React.ReactNode }) {
+function TiltCard({ children, disabled = false }: { children: React.ReactNode; disabled?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -54,6 +54,7 @@ function TiltCard({ children }: { children: React.ReactNode }) {
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-6deg', '6deg']);
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (disabled) return;
     const rect = ref.current?.getBoundingClientRect();
     if (rect) {
       x.set((e.clientX - rect.left) / rect.width - 0.5);
@@ -66,7 +67,7 @@ function TiltCard({ children }: { children: React.ReactNode }) {
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => { x.set(0); y.set(0); }}
-      style={{ rotateX, rotateY, transformStyle: 'preserve-3d', transformPerspective: 1000 }}
+      style={disabled ? {} : { rotateX, rotateY, transformStyle: 'preserve-3d', transformPerspective: 1000 }}
     >
       {children}
     </motion.div>
@@ -206,7 +207,7 @@ export default function Projects() {
           }}
         >
           {projects.map((project, index) => (
-            <TiltCard key={project.title}>
+            <TiltCard key={project.title} disabled={isMobile}>
               <motion.div
                 variants={createVariants(index % 2 === 0 ? 'left' : 'right', 60)}
                 onMouseEnter={() => setHoveredIndex(index)}

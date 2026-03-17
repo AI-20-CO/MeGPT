@@ -756,10 +756,7 @@ class App {
       container.offsetHeight,
       false
     );
-    // Cap DPR on mobile for better performance
-    const isMobile = window.innerWidth < 768;
-    const maxDpr = isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
-    this.renderer.setPixelRatio(maxDpr);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
 
     this.composer = new EffectComposer(this.renderer);
     container.appendChild(this.renderer.domElement);
@@ -916,19 +913,15 @@ class App {
     this.container.addEventListener('mouseup', this.onMouseUp);
     this.container.addEventListener('mouseout', this.onMouseUp);
 
-    // Only add touch handlers on desktop - they interfere with mobile scrolling
-    const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
-    if (!isMobile) {
-      this.container.addEventListener('touchstart', this.onTouchStart, {
-        passive: true,
-      });
-      this.container.addEventListener('touchend', this.onTouchEnd, {
-        passive: true,
-      });
-      this.container.addEventListener('touchcancel', this.onTouchEnd, {
-        passive: true,
-      });
-    }
+    this.container.addEventListener('touchstart', this.onTouchStart, {
+      passive: true,
+    });
+    this.container.addEventListener('touchend', this.onTouchEnd, {
+      passive: true,
+    });
+    this.container.addEventListener('touchcancel', this.onTouchEnd, {
+      passive: true,
+    });
     this.container.addEventListener('contextmenu', this.onContextMenu);
 
     this.tick();
