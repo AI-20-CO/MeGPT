@@ -1,18 +1,35 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { ThemeProvider, useTheme } from '@/context';
-import { FluidCursor, LoadingScreen, Hyperspeed } from '@/components/ui';
+import { LoadingScreen } from '@/components/ui';
 import { Sidebar } from '@/components/layout';
 import { Hero, About, Skills, Experience, Projects, Contact } from '@/components/sections';
 import { useScroll, useTransform, motion, useSpring } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+
+// Lazy load heavy WebGL component - this is the main performance killer
+const Hyperspeed = dynamic(() => import('@/components/ui/Hyperspeed').then(mod => mod.default), {
+  ssr: false,
+  loading: () => null, // No loading indicator - it fades in anyway
+});
+
+// Lazy load decorative cursor - not needed for initial render
+const FluidCursor = dynamic(() => import('@/components/ui/FluidCursor').then(mod => mod.default), {
+  ssr: false,
+  loading: () => null,
+});
 
 function MainContent() {
   const { theme } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   
   useEffect(() => {
     setIsMobile(window.innerWidth <= 768);
+    // Delay heavy component hydration to prioritize initial render
+    const timer = setTimeout(() => setIsHydrated(true), 100);
+    return () => clearTimeout(timer);
   }, []);
   
   // Scroll-based opacity for Hyperspeed - starts invisible, fades in, then goes to full brightness at the bottom "Ask" section
@@ -34,36 +51,40 @@ function MainContent() {
   return (
     <>
       <LoadingScreen />
-      <FluidCursor />
+      {isHydrated && <FluidCursor />}
       <Sidebar />
       
-      {/* Fixed Hyperspeed background with scroll-based fade in */}
-      <motion.div style={{ 
-        position: 'fixed', 
-        inset: 0, 
-        opacity: hyperspeedOpacity,
-        zIndex: 0,
-        pointerEvents: 'none'
-      }}>
-        <Hyperspeed
-          effectOptions={{
-            colors: {
-              roadColor: theme === 'dark' ? 0x080808 : 0x080808,
-              islandColor: theme === 'dark' ? 0x0a0a0a : 0x0a0a0a,
-              background: theme === 'dark' ? 0x000000 : 0x000000,
-              shoulderLines: theme === 'dark' ? 0x131318 : 0xc084fc,
-              brokenLines: theme === 'dark' ? 0x131318 : 0xd8b4fe,
-              leftCars: theme === 'dark' 
-                ? [0xc4a35a, 0xa88a4a, 0xc4a35a] 
-                : [0xd946ef, 0xc026d3, 0xa855f7],
-              rightCars: theme === 'dark'
-                ? [0xc0c0c0, 0xa0a0a0, 0xc0c0c0]
-                : [0xf0abfc, 0xe879f9, 0xc084fc],
-              sticks: theme === 'dark' ? 0xc4a35a : 0xe879f9,
-            },
-          }}
-        />
-      </motion.div>
+      {/* Fixed Hyperspeed background with scroll-based fade in - loaded after hydration */}
+      {isHydrated && (
+        <motion.div style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          opacity: hyperspeedOpacity,
+          zIndex: 0,
+          pointerEvents: 'none'
+        }}>
+          <Suspense fallback={null}>
+            <Hyperspeed
+              effectOptions={{
+                colors: {
+                  roadColor: theme === 'dark' ? 0x080808 : 0x080808,
+                  islandColor: theme === 'dark' ? 0x0a0a0a : 0x0a0a0a,
+                  background: theme === 'dark' ? 0x000000 : 0x000000,
+                  shoulderLines: theme === 'dark' ? 0x131318 : 0xc084fc,
+                  brokenLines: theme === 'dark' ? 0x131318 : 0xd8b4fe,
+                  leftCars: theme === 'dark' 
+                    ? [0xc4a35a, 0xa88a4a, 0xc4a35a] 
+                    : [0xd946ef, 0xc026d3, 0xa855f7],
+                  rightCars: theme === 'dark'
+                    ? [0xc0c0c0, 0xa0a0a0, 0xc0c0c0]
+                    : [0xf0abfc, 0xe879f9, 0xc084fc],
+                  sticks: theme === 'dark' ? 0xc4a35a : 0xe879f9,
+                },
+              }}
+            />
+          </Suspense>
+        </motion.div>
+      )}
       
       <main
         style={{

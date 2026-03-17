@@ -1,9 +1,15 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, Suspense } from 'react';
 import { useTheme } from '@/context/ThemeContext';
-import { Orb } from '@/components/ui';
+
+// Lazy load heavy WebGL Orb component
+const Orb = dynamic(() => import('@/components/ui/Orb').then(mod => mod.default), {
+  ssr: false,
+  loading: () => null,
+});
 
 // Animated text that reveals character by character
 const AnimatedText = ({ text, delay = 0, className = '', color }: { text: string; delay?: number; className?: string; color?: string }) => {
@@ -78,9 +84,15 @@ export default function Hero() {
   const [isMobileParticles, setIsMobileParticles] = useState(false);
   const [particles] = useState(() => Array.from({ length: 20 }, (_, i) => i));
   
+  // Delayed hydration for heavy WebGL components
+  const [isOrbReady, setIsOrbReady] = useState(false);
+  
   // Check for mobile on mount for particle count
   useEffect(() => {
     setIsMobileParticles(window.innerWidth <= 768);
+    // Delay Orb loading to prioritize initial content render
+    const timer = setTimeout(() => setIsOrbReady(true), 200);
+    return () => clearTimeout(timer);
   }, []);
   
   // Hero section scroll progress (for text opacity/scale)
@@ -231,12 +243,16 @@ export default function Hero() {
           zIndex: 0,
         }}
       >
-        <Orb
-          hue={theme === 'dark' ? 220 : 0}
-          hoverIntensity={1.5}
-          rotateOnHover={true}
-          backgroundColor="#0a0a0a"
-        />
+        {isOrbReady && (
+          <Suspense fallback={null}>
+            <Orb
+              hue={theme === 'dark' ? 220 : 0}
+              hoverIntensity={1.5}
+              rotateOnHover={true}
+              backgroundColor="#0a0a0a"
+            />
+          </Suspense>
+        )}
       </motion.div>
 
       {/* Gradient orb accents */}
