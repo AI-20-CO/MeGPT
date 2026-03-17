@@ -8,8 +8,8 @@ export default function LoadingScreen() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Animate progress from 0 to 100
-    const duration = 1500; // 1.5 seconds total
+    // Faster loading animation - 0.8 seconds total
+    const duration = 800;
     const steps = 100;
     const stepDuration = duration / steps;
 
@@ -20,10 +20,10 @@ export default function LoadingScreen() {
 
       if (currentProgress >= 100) {
         clearInterval(interval);
-        // Small delay before hiding
+        // Immediate hide after completion
         setTimeout(() => {
           setIsLoading(false);
-        }, 300);
+        }, 100);
       }
     }, stepDuration);
 
