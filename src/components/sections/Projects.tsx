@@ -82,7 +82,9 @@ export default function Projects() {
   const { theme, colors } = useTheme();
 
   useEffect(() => {
-    setIsMobile(window.innerWidth <= 768);
+    // Check for touch device OR small screen
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+    setIsMobile(isTouchDevice || window.innerWidth <= 768);
   }, []);
 
   const { scrollYProgress } = useScroll({

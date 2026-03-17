@@ -122,7 +122,9 @@ export default function Hero() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      // Check for touch device OR small screen
+      const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+      setIsMobile(isTouchDevice || window.innerWidth <= 768);
     };
     
     // Initial check

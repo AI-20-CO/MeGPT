@@ -40,6 +40,8 @@ export default function RootLayout({
       <body className={`${inter.variable} ${syncopate.variable}`} style={{ fontFamily: 'var(--font-inter), sans-serif' }} suppressHydrationWarning>
         {children}
         <SpeedInsights />
+pressHydrationWarning>
+        {children}
       </body>
     </html>
   );
