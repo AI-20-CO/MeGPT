@@ -119,7 +119,7 @@ This project is licensed under the MIT License.
 ##  Author
 
 **Ayaan Izhar**
-- Portfolio: [Your Website URL]
+- Portfolio: 
 - GitHub: [@AI-20-CO](https://github.com/AI-20-CO)
 - LinkedIn: [ayaan-izhar](https://linkedin.com/in/ayaan-izhar)
 
