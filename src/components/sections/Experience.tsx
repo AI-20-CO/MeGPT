@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
@@ -24,7 +24,7 @@ const experiences = [
 
 export default function Experience() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.35 });
+  const isInView = useInView(ref, { amount: 0.2 });
   const { theme, colors } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -37,8 +37,9 @@ export default function Experience() {
     offset: ['start end', 'end start'],
   });
 
-  // Skip parallax on mobile
-  const y = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [80, -80]);
+  // Use spring to smooth scroll parallax (prevents jank)
+  const yRaw = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [60, -60]);
+  const y = useSpring(yRaw, { stiffness: 80, damping: 25, restDelta: 0.001 });
 
   return (
     <section
@@ -113,7 +114,7 @@ export default function Experience() {
       >
         {/* Header - animates from left */}
         <motion.div
-          variants={createVariants('left', 80)}
+          variants={createVariants('left', 60)}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
           style={{ marginBottom: '20px', flexShrink: 0 }}
@@ -156,7 +157,7 @@ export default function Experience() {
           {experiences.map((exp) => (
             <motion.div
               key={exp.company}
-              variants={createVariants('bottom', 60)}
+              variants={createVariants('bottom', 50)}
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
@@ -225,7 +226,7 @@ export default function Experience() {
                       key={i}
                       initial={{ opacity: 0, x: 20 }}
                       animate={isInView ? { opacity: 1, x: 0 } : {}}
-                      transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
+                      transition={{ duration: 0.4, delay: 0.3 + i * 0.08 }}
                       style={{
                         fontSize: 'clamp(12px, 2.5vw, 14px)',
                         lineHeight: 1.7,
@@ -265,7 +266,7 @@ export default function Experience() {
                       key={tech}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                      transition={{ duration: 0.3, delay: 0.8 + i * 0.05 }}
+                      transition={{ duration: 0.3, delay: 0.6 + i * 0.04 }}
                       whileHover={{ 
                         scale: 1.05, 
                         background: theme === 'dark' 

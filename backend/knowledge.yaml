@@ -1,0 +1,342 @@
+# Ayaan Izhar - Portfolio Knowledge Base
+# This file contains all information the AI assistant should know about you
+
+personal:
+  name: "Ayaan Izhar"
+  title: "Software Engineering Intern at Experian PLC"
+  location: "Kuala Lumpur, Malaysia"
+  phone: "+60 10-430 1423"
+  email: "ayaan.izhar01@gmail.com"
+  tagline: "Software Engineer crafting scalable solutions and modern experiences."
+  
+  bio: |
+    I'm a Software Engineering student at Taylor's University graduating in January 2026, 
+    currently working as a Software Engineering Intern at Experian PLC. I specialize in 
+    building scalable backend systems, microservices, and full-stack applications.
+    My approach combines strong engineering fundamentals with a passion for clean, 
+    maintainable code and performance optimization.
+
+about:
+  summary: |
+    A dedicated software engineer with expertise in full-stack development, microservices architecture,
+    and cloud infrastructure. Currently at Experian PLC working on Java/Spring Boot migrations, 
+    Kubernetes deployments, and CI/CD pipelines. Passionate about building scalable systems
+    and solving complex engineering challenges.
+  
+  interests:
+    - Building scalable microservices and distributed systems
+    - Cloud infrastructure and DevOps practices
+    - AI/ML integration in applications
+    - Performance optimization
+    - Open source contribution
+
+skills:
+  languages:
+    - name: "Java"
+      proficiency: "Advanced"
+      description: "Primary backend language, Spring Boot development"
+    - name: "TypeScript"
+      proficiency: "Advanced"
+      description: "Full-stack web development"
+    - name: "JavaScript"
+      proficiency: "Advanced"
+      description: "Frontend and Node.js development"
+    - name: "Python"
+      proficiency: "Advanced"
+      description: "Backend development, AI/ML, Data Analysis"
+    - name: "R"
+      proficiency: "Intermediate"
+      description: "Statistical modeling and data analysis"
+    - name: "C++"
+      proficiency: "Intermediate"
+      description: "Systems programming"
+
+  backend_and_apis:
+    - name: "Spring Boot"
+      proficiency: "Advanced"
+      description: "Enterprise Java microservices"
+    - name: "Microservices Architecture"
+      proficiency: "Advanced"
+      description: "Distributed systems design"
+    - name: "RESTful APIs"
+      proficiency: "Advanced"
+      description: "API design and implementation"
+    - name: "FastAPI"
+      proficiency: "Advanced"
+      description: "Python backend development"
+    - name: "JAX-RS"
+      proficiency: "Intermediate"
+      description: "Java REST API development"
+    - name: "JPA/Hibernate"
+      proficiency: "Advanced"
+      description: "ORM and database integration"
+    - name: "Node.js"
+      proficiency: "Intermediate"
+      description: "Server-side JavaScript"
+    - name: "OSGi"
+      proficiency: "Intermediate"
+      description: "Modular Java development"
+  
+  frontend:
+    - name: "React.js"
+      proficiency: "Advanced"
+      description: "Component-based UI development"
+    - name: "React Native"
+      proficiency: "Advanced"
+      description: "Cross-platform mobile development"
+    - name: "Next.js"
+      proficiency: "Advanced"
+      description: "Full-stack React framework"
+    - name: "Tailwind CSS"
+      proficiency: "Advanced"
+      description: "Utility-first CSS framework"
+    - name: "HTML/CSS"
+      proficiency: "Advanced"
+      description: "Web fundamentals"
+
+  databases:
+    - name: "PostgreSQL"
+      proficiency: "Advanced"
+      description: "Primary relational database"
+    - name: "MySQL"
+      proficiency: "Advanced"
+      description: "Relational database"
+    - name: "MongoDB"
+      proficiency: "Intermediate"
+      description: "NoSQL document database"
+
+  cloud_and_devops:
+    - name: "Docker"
+      proficiency: "Advanced"
+      description: "Containerization"
+    - name: "Kubernetes"
+      proficiency: "Advanced"
+      description: "Container orchestration"
+    - name: "AWS (EC2, EKS, S3)"
+      proficiency: "Advanced"
+      description: "Cloud infrastructure"
+    - name: "Jenkins"
+      proficiency: "Advanced"
+      description: "CI/CD pipelines"
+    - name: "Maven"
+      proficiency: "Advanced"
+      description: "Java build automation"
+    - name: "Gradle"
+      proficiency: "Intermediate"
+      description: "Build automation"
+    - name: "SonarQube"
+      proficiency: "Advanced"
+      description: "Code quality and security"
+
+  backend_services:
+    - name: "Supabase"
+      proficiency: "Advanced"
+      description: "Backend as a Service"
+    - name: "Stripe"
+      proficiency: "Advanced"
+      description: "Payment processing API"
+    - name: "Clerk"
+      proficiency: "Advanced"
+      description: "Authentication service"
+
+  testing:
+    - name: "JUnit"
+      proficiency: "Advanced"
+      description: "Java unit testing"
+    - name: "JMeter"
+      proficiency: "Advanced"
+      description: "Performance testing"
+    - name: "Cucumber (BDD)"
+      proficiency: "Intermediate"
+      description: "Behavior-driven development"
+    - name: "Jest"
+      proficiency: "Advanced"
+      description: "JavaScript testing"
+    - name: "React Testing Library"
+      proficiency: "Advanced"
+      description: "React component testing"
+    - name: "pytest"
+      proficiency: "Advanced"
+      description: "Python testing"
+
+  data_visualization:
+    - "Matplotlib"
+    - "Seaborn"
+    - "Plotly"
+    - "Streamlit"
+
+  design_tools:
+    - "UML diagrams"
+    - "Figma"
+    - "Proto.io"
+  
+  developer_tools:
+    - "Git"
+    - "Bitbucket"
+    - "Postman"
+    - "Bruno"
+    - "Expo"
+    - "Jira"
+    - "Confluence"
+    - "Shell Scripting"
+  
+  best_skills:
+    - "Java/Spring Boot Development"
+    - "Microservices Architecture"
+    - "Cloud Infrastructure (AWS, Kubernetes)"
+    - "CI/CD Pipeline Development"
+    - "Full-Stack Development (React, Next.js)"
+    - "Performance Optimization"
+    - "API Design and Integration"
+
+experience:
+  positions:
+    - title: "Software Engineering Intern"
+      company: "Experian PLC"
+      period: "September 2025 - Present"
+      location: "Cyberjaya, Malaysia"
+      description: "Working on enterprise-scale microservices, cloud infrastructure, and CI/CD pipelines"
+      highlights:
+        - "Resolved Hazelcast instability during Karpenter node replacement, reducing downtime from ~60s to ~1s (~98% reduction) while restoring cache across database-backed microservices. Solution presented to and accepted by the Global Head of SRE for implementation."
+        - "Migrated 35+ legacy RMI endpoints to Spring Boot REST APIs to support the Java 17 to Java 21 upgrade, achieving 100% unit test coverage across migrated modules and improving service maintainability."
+        - "Designed and implemented a centralized REST request-processing framework that standardizes payload validation, parsing, IO exception propagation, stack-trace preservation, and business exception handling via an abstract base class with lambda-based hooks, eliminating 1500+ lines of duplicated logic and reducing endpoint implementation effort by ~70%."
+        - "Built parameterized Jenkins CI/CD pipelines supporting release-candidate (RC) workflows with selectable unit, integration, and sanity test suites, enforcing SonarQube quality gates, producing versioned release tags, publishing JAR/Docker artifacts, and enabling optional deployment to EC2 staging with post-deploy smoke checks."
+        - "Improved service resilience by tuning startup, readiness, and liveness probes, reducing traffic routed to unready pods by ~79% during deployments and node transitions."
+        - "Provisioned and validated deployments on AWS EKS, configuring node selectors and persona mappings to stabilize service scheduling and runtime behavior."
+
+projects:
+  featured:
+    - name: "StyleSync"
+      description: "Full-stack AI-powered fashion e-commerce platform integrating retail, rental, and P2P marketplaces with AI-driven outfit recommendations"
+      period: "Solo-Developed Application: 1.5 months"
+      technologies: ["React Native", "Redux", "FastAPI", "REST APIs", "PostgreSQL", "Supabase", "Stripe", "Clerk", "Weather API", "Jest", "Pytest", "Docker"]
+      github: "https://github.com/AI-20-CO/StylesSync-AI-Powered-Fashion-App"
+      demo: "https://www.youtube.com/watch?v=KfduQByZijQ"
+      highlights:
+        - "Designed and developed a full-stack fashion e-commerce platform integrating retail, rental, and P2P marketplaces, with AI-driven outfit recommendations based on user attributes and contextual factors (e.g., size, skin tone, and weather)."
+        - "Developed a Supabase-backed REST architecture integrating Stripe and Clerk APIs, with FastAPI microservices for AI inference and backend workflows."
+        - "Optimized data-processing logic to achieve sub-500ms response times for core workflows."
+        - "Architected the system for scalability, validating support for up to 500K users under simulated load without service degradation."
+        - "Developed a CNN-based skin tone classification model in PyTorch for personalized outfit recommendations, integrating model inference into FastAPI microservices."
+
+    - name: "CheckMate"
+      description: "AI-powered misinformation detection platform that transcribes multimedia content, verifies claims using OpenAI API and web scraping, and computes creator credibility scores"
+      period: "Nation Wide ImagineHack Hackathon: 1st Runner Up"
+      technologies: ["TypeScript", "Next.js", "Clerk", "ConvexDB", "JavaScript", "Dart", "OpenAI API"]
+      github: "https://github.com/AI-20-CO/checkmate"
+      demo: "https://checkmate.mohtasham.dev/"
+      highlights:
+        - "Developed CheckMate, an AI-powered misinformation detection platform that transcribes multimedia content, verifies claims using the OpenAI API and web scraping, and computes creator credibility scores using data-driven algorithms."
+        - "Designed and implemented the core idea executing backend LLM integration."
+        - "Lead Presenter, creating the architecture diagrams while presenting the slides."
+
+    - name: "Mail Merge"
+      description: "Platform that automates the grading email system by creating a mail with placeholders, uploading a CSV file with student grades, and sending emails in one click"
+      period: "KFUPM inspired Project"
+      technologies: ["Streamlit", "Python", "MySQL", "HTML/CSS", "Heroku"]
+      github: "https://github.com/AI-20-CO/Mail-Merge"
+      highlights:
+        - "A platform which automates the grading email system by one click by creating a simple mail with placeholders, uploading the .csv file containing the list of students with their grades and sending the email to all in just one click."
+        - "Designed and developed the application which uses manual authentication tokenism storage inside MySQL, using streamlit for front end and state management."
+
+    - name: "Alzheimer's Diagnosis Prediction"
+      description: "Machine learning models to predict Alzheimer's diagnosis using lifestyle and chronic medical features"
+      technologies: ["Python", "Matplotlib", "Seaborn", "NumPy", "Pandas"]
+      github: "https://github.com/AI-20-CO/alzheimers-diagnosis-prediction-ml"
+      highlights:
+        - "Built machine learning models (Logistic Regression, Naive Bayes, Random Forest) to predict Alzheimer's diagnosis using lifestyle and chronic medical features."
+
+    - name: "Portfolio Website"
+      description: "Personal portfolio with immersive WebGL effects and AI-powered chat assistant"
+      technologies: ["Next.js", "TypeScript", "Three.js", "OGL", "Framer Motion", "FastAPI"]
+      highlights:
+        - "Interactive 3D orb using OGL with GLSL shaders"
+        - "Hyperspeed background animation with Three.js"
+        - "Dark/light theme support"
+        - "AI-powered portfolio assistant"
+
+education:
+  - degree: "Bachelor of Software Engineering (Honors)"
+    institution: "Taylor's University"
+    location: "Subang Jaya, Malaysia"
+    period: "January 2023 - January 2026"
+    cgpa: "3.95"
+    final_year_gpas: "3.71, 3.86, 3.84, 4.00"
+    deans_list: "Semester 1, Final Year: Semesters 5, 6, 7, and 8"
+    coursework:
+      - "Programming (Machine Learning)"
+      - "Object-Oriented Programming"
+      - "Advanced Programming"
+      - "Database Systems"
+      - "Software Design"
+      - "Computer Architecture and Organisation"
+      - "IoT"
+      - "Software Project Management"
+      - "Software Quality Management"
+      - "Theory of Computation"
+      - "Statistical Modeling and Inference"
+      - "Software Testing"
+      - "Human-Computer Interaction"
+      - "Requirements Engineering"
+      - "System Fundamentals"
+      - "Web Development"
+      - "Capstone 1 and 2 (AI, ML, React Native, Supabase, FastAPI, Redux, Clerk)"
+
+certifications:
+  - name: "DataCamp - Data Engineer"
+    date: "November 2025"
+  - name: "DataCamp - Associate Data Analyst"
+    date: "November 2025"
+  - name: "Cisco IOS"
+    date: "December 2024"
+  - name: "Oracle - Java Developer"
+    date: "September 2023"
+
+contact:
+  email: "ayaan.izhar01@gmail.com"
+  phone: "+60 10-430 1423"
+  github: "https://github.com/AI-20-CO"
+  linkedin: "https://www.linkedin.com/in/ayaan-izhar-8293b8371/"
+  location: "Kuala Lumpur, Malaysia"
+
+hobbies:
+  - "Building side projects"
+  - "Learning new technologies"
+  - "Contributing to open source"
+  - "Reading tech blogs"
+  - "Problem solving"
+
+# AI Assistant Behavior Rules
+assistant_rules:
+  personality:
+    - "Friendly and professional"
+    - "Concise but informative"
+    - "Enthusiastic about Ayaan's work"
+    - "Helpful and engaging"
+  
+  response_style:
+    - "Keep responses conversational but professional"
+    - "Use first person when speaking as Ayaan's assistant"
+    - "Highlight relevant skills and experiences when appropriate"
+    - "Be specific with examples from projects when possible"
+  
+  guardrails:
+    - "Never share sensitive personal information beyond what's provided"
+    - "Don't make up information not in the knowledge base"
+    - "If unsure, admit it and suggest contacting Ayaan directly"
+    - "Stay on topic - redirect unrelated questions back to Ayaan's portfolio"
+    - "Don't engage with inappropriate or offensive content"
+    - "Don't discuss competitors or make negative comparisons"
+  
+  suggested_topics:
+    - "Skills and expertise"
+    - "Projects and portfolio"
+    - "Work experience at Experian"
+    - "Tech stack preferences"
+    - "Education and certifications"
+    - "Availability for opportunities"
+    - "Contact information"
+
+  off_topic_response: |
+    I'm Ayaan's portfolio assistant, so I'm best at answering questions about his skills, 
+    projects, and experience. Is there something specific about Ayaan's work you'd like to know?

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
@@ -106,7 +106,7 @@ function SkillBar({ name, level, delay, color, isInView, colors }: {
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.5, delay }}
+      transition={{ duration: 0.4, delay }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{ marginBottom: '16px' }}
@@ -142,7 +142,7 @@ function SkillBar({ name, level, delay, color, isInView, colors }: {
         <motion.div
           initial={{ width: 0 }}
           animate={isInView ? { width: `${level}%` } : {}}
-          transition={{ duration: 1, delay: delay + 0.2, ease: [0.4, 0, 0.2, 1] }}
+          transition={{ duration: 0.8, delay: delay + 0.15, ease: [0.22, 1, 0.36, 1] }}
           style={{
             height: '100%',
             borderRadius: '2px',
@@ -162,7 +162,7 @@ function TechTag({ tech, color, index, isInView }: { tech: string; color: string
     <motion.span
       initial={{ opacity: 0, y: 10 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.4, delay: index * 0.03 }}
+      transition={{ duration: 0.35, delay: index * 0.025 }}
       whileHover={{ 
         scale: 1.08,
         background: `${color}25`,
@@ -187,7 +187,7 @@ function TechTag({ tech, color, index, isInView }: { tech: string; color: string
 
 export default function Skills() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.35 });
+  const isInView = useInView(ref, { amount: 0.2 });
   const [activeCategory, setActiveCategory] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const { theme, colors } = useTheme();
@@ -206,12 +206,9 @@ export default function Skills() {
     offset: ['start end', 'end start'],
   });
 
-  // Skip opacity transform on mobile for smoother scrolling
-  const opacity = useTransform(
-    scrollYProgress, 
-    [0, 0.2, 0.8, 1], 
-    isMobile ? [1, 1, 1, 1] : [0.5, 1, 1, 0.5]
-  );
+  // Use spring to smooth scroll-based opacity (prevents jank)
+  const opacityRaw = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], isMobile ? [1, 1, 1, 1] : [0.4, 1, 1, 0.4]);
+  const opacity = useSpring(opacityRaw, { stiffness: 80, damping: 25, restDelta: 0.001 });
 
   return (
     <section
@@ -286,7 +283,7 @@ export default function Skills() {
       >
         {/* Header - animates from left */}
         <motion.div
-          variants={createVariants('left', 80)}
+          variants={createVariants('left', 60)}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
           style={{ marginBottom: '40px' }}
@@ -317,7 +314,7 @@ export default function Skills() {
 
         {/* Category tabs */}
         <motion.div
-          variants={createVariants('right', 60)}
+          variants={createVariants('right', 50)}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
           className="hide-scrollbar"
@@ -384,7 +381,7 @@ export default function Skills() {
           {/* Skill bars - Selected category */}
           <motion.div
             key={activeCategory}
-            variants={createVariants('left', 50)}
+            variants={createVariants('left', 40)}
             style={{
               padding: 'clamp(20px, 4vw, 28px)',
               borderRadius: '20px',
@@ -497,9 +494,9 @@ export default function Skills() {
               {segregatedTechnologies.map((group, groupIndex) => (
                 <motion.div
                   key={group.category}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-                  transition={{ duration: 0.5, delay: groupIndex * 0.1 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: groupIndex * 0.05 }}
                 >
                   <div style={{
                     fontSize: '11px',
@@ -517,7 +514,7 @@ export default function Skills() {
                         key={tech} 
                         tech={tech} 
                         color={group.color} 
-                        index={index} 
+                        index={index}
                         isInView={isInView}
                       />
                     ))}

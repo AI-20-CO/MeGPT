@@ -43,15 +43,16 @@ const projects = [
   },
 ];
 
-// 3D Tilt Card Component
+// 3D Tilt Card Component - hover weighted effect
 function TiltCard({ children, disabled = false }: { children: React.ReactNode; disabled?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 15 });
-  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 15 });
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['6deg', '-6deg']);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-6deg', '6deg']);
+  // Spring for smooth tilt response
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['12deg', '-12deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-12deg', '12deg']);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (disabled) return;
@@ -63,21 +64,22 @@ function TiltCard({ children, disabled = false }: { children: React.ReactNode; d
   };
 
   return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
-      style={disabled ? {} : { rotateX, rotateY, transformStyle: 'preserve-3d', transformPerspective: 1000 }}
-    >
-      {children}
-    </motion.div>
+    <div style={{ perspective: 1000 }}>
+      <motion.div
+        ref={ref}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => { x.set(0); y.set(0); }}
+        style={disabled ? {} : { rotateX, rotateY, transformStyle: 'preserve-3d' }}
+      >
+        {children}
+      </motion.div>
+    </div>
   );
 }
 
 export default function Projects() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.35 });
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const isInView = useInView(ref, { amount: 0.2 });
   const [isMobile, setIsMobile] = useState(false);
   const { theme, colors } = useTheme();
 
@@ -92,8 +94,10 @@ export default function Projects() {
     offset: ['start end', 'end start'],
   });
 
-  // Skip opacity transform on mobile
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], isMobile ? [1, 1, 1, 1] : [0.5, 1, 1, 0.5]);
+  // Use spring to smooth out scroll-based opacity (prevents jank)
+  // More gradual fade values for smoother aesthetic transitions
+  const opacityRaw = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], isMobile ? [1, 1, 1, 1] : [0.4, 1, 1, 0.4]);
+  const opacity = useSpring(opacityRaw, { stiffness: 80, damping: 25, restDelta: 0.001 });
 
   return (
     <section
@@ -168,7 +172,7 @@ export default function Projects() {
       >
         {/* Header */}
         <motion.div
-          variants={createVariants('left', 80)}
+          variants={createVariants('left', 60)}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
           style={{ marginBottom: '40px' }}
@@ -211,54 +215,30 @@ export default function Projects() {
           {projects.map((project, index) => (
             <TiltCard key={project.title} disabled={isMobile}>
               <motion.div
-                variants={createVariants(index % 2 === 0 ? 'left' : 'right', 60)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
+                variants={createVariants(index % 2 === 0 ? 'left' : 'right', 50)}
+                whileHover={isMobile ? {} : { scale: 1.02, y: -6 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 className="project-card"
+                data-theme={theme}
                 style={{
                   padding: 'clamp(16px, 3vw, 24px)',
                   borderRadius: '16px',
                   boxSizing: 'border-box',
-                  background: hoveredIndex === index 
-                    ? project.gradient
-                    : theme === 'dark'
-                      ? 'linear-gradient(145deg, rgba(196, 163, 90, 0.04) 0%, rgba(192, 192, 192, 0.02) 100%)'
-                      : 'linear-gradient(145deg, rgba(168, 85, 247, 0.08) 0%, rgba(34, 211, 238, 0.04) 100%)',
-                  border: hoveredIndex === index 
-                    ? theme === 'dark'
-                      ? '1px solid rgba(196, 163, 90, 0.3)'
-                      : '1px solid rgba(168, 85, 247, 0.35)'
-                    : theme === 'dark'
-                      ? '1px solid rgba(196, 163, 90, 0.1)'
-                      : '1px solid rgba(168, 85, 247, 0.2)',
+                  background: theme === 'dark'
+                    ? 'linear-gradient(145deg, rgba(196, 163, 90, 0.04) 0%, rgba(192, 192, 192, 0.02) 100%)'
+                    : 'linear-gradient(145deg, rgba(168, 85, 247, 0.08) 0%, rgba(34, 211, 238, 0.04) 100%)',
+                  border: theme === 'dark'
+                    ? '1px solid rgba(196, 163, 90, 0.1)'
+                    : '1px solid rgba(168, 85, 247, 0.2)',
                   position: 'relative',
                   overflow: 'hidden',
-                  transition: 'all 0.4s ease',
                   cursor: 'pointer',
-                  boxShadow: 'none',
+                  // @ts-expect-error CSS custom property
+                  '--hover-gradient': project.gradient,
                 }}
               >
-                {/* Shine effect */}
-                <motion.div
-                  initial={{ x: '-100%', opacity: 0 }}
-                  animate={{ 
-                    x: hoveredIndex === index ? '200%' : '-100%',
-                    opacity: hoveredIndex === index ? 0.2 : 0 
-                  }}
-                  transition={{ duration: 0.6 }}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '50%',
-                    height: '100%',
-                    background: theme === 'dark' 
-                      ? 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)'
-                      : 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent)',
-                    transform: 'skewX(-20deg)',
-                    pointerEvents: 'none',
-                  }}
-                />
+                {/* Shine effect - CSS only */}
+                <div className="card-shine" />
 
                 {/* Header row */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
@@ -293,16 +273,13 @@ export default function Projects() {
                 </div>
 
                 {/* Title */}
-                <h3 style={{
+                <h3 className="project-title" style={{
                   fontFamily: 'var(--font-syncopate)',
                   textTransform: 'uppercase',
                   fontSize: 'clamp(15px, 2.5vw, 18px)',
                   fontWeight: 500,
-                  color: hoveredIndex === index 
-                    ? (theme === 'dark' ? '#fff' : '#111')
-                    : colors.text,
+                  color: colors.text,
                   margin: '0 0 8px 0',
-                  transition: 'color 0.3s ease',
                 }}>
                   {project.title}
                 </h3>
@@ -401,6 +378,43 @@ export default function Projects() {
       </motion.div>
 
       <style jsx global>{`
+        .project-card {
+          transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        .project-card:hover {
+          background: var(--hover-gradient) !important;
+        }
+        .project-card[data-theme="dark"]:hover {
+          border-color: rgba(196, 163, 90, 0.3) !important;
+          box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4), 0 8px 16px -8px rgba(196, 163, 90, 0.15);
+        }
+        .project-card[data-theme="light"]:hover {
+          border-color: rgba(168, 85, 247, 0.35) !important;
+          box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 8px 16px -8px rgba(168, 85, 247, 0.1);
+        }
+        .project-card[data-theme="dark"]:hover .project-title {
+          color: #fff;
+        }
+        .project-card[data-theme="light"]:hover .project-title {
+          color: #111;
+        }
+        .project-title {
+          transition: color 0.3s ease;
+        }
+        .card-shine {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 50%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+          transform: translateX(-100%) skewX(-20deg);
+          pointer-events: none;
+          transition: transform 0.6s ease;
+        }
+        .project-card:hover .card-shine {
+          transform: translateX(300%) skewX(-20deg);
+        }
         @media (max-width: 768px) {
           .projects-grid {
             grid-template-columns: 1fr !important;

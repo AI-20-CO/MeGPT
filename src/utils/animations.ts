@@ -21,21 +21,21 @@ import type { AnimationDirection } from '@/types';
 export const ANIMATION_CONFIG = {
   /** Duration values in seconds */
   duration: {
-    fast: 0.3,
-    normal: 0.5,
-    slow: 0.8,
+    fast: 0.25,
+    normal: 0.4,
+    slow: 0.6,
   },
-  /** Cubic bezier easing curves */
+  /** Cubic bezier easing curves - optimized for smoothness */
   ease: {
-    default: [0.25, 0.1, 0.25, 1] as const,
-    smooth: [0.76, 0, 0.24, 1] as const,
-    bounce: [0.68, -0.55, 0.265, 1.55] as const,
+    default: [0.22, 1, 0.36, 1] as const, // Smooth ease-out
+    smooth: [0.4, 0, 0.2, 1] as const,
+    bounce: [0.68, -0.3, 0.265, 1.35] as const,
   },
-  /** Stagger timing for lists */
+  /** Stagger timing for lists - faster for snappier feel */
   stagger: {
-    fast: 0.05,
-    normal: 0.08,
-    slow: 0.15,
+    fast: 0.03,
+    normal: 0.05,
+    slow: 0.08,
   },
 } as const;
 
@@ -76,8 +76,8 @@ export const createVariants = (
       opacity: 0,
       x: offset.x,
       y: offset.y,
-      scale: direction === 'center' ? 0.85 : 0.95,
-      filter: 'blur(10px)',
+      scale: direction === 'center' ? 0.9 : 0.97,
+      filter: 'blur(4px)', // Reduced from 10px for performance
     },
     visible: {
       opacity: 1,
@@ -86,8 +86,8 @@ export const createVariants = (
       scale: 1,
       filter: 'blur(0px)',
       transition: {
-        duration: ANIMATION_CONFIG.duration.normal,
-        ease: ANIMATION_CONFIG.ease.default,
+        duration: 0.7,
+        ease: [0.16, 1, 0.3, 1], // Smoother organic ease-out
       },
     },
   };
@@ -119,103 +119,29 @@ export const containerVariants: Variants = {
 };
 
 // =============================================================================
-// PRESET VARIANTS (for common use cases)
-// =============================================================================
-
-/** Fade in with upward movement */
-export const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: ANIMATION_CONFIG.duration.slow,
-      ease: ANIMATION_CONFIG.ease.smooth,
-    },
-  },
-};
-
-/** Simple fade in */
-export const fadeIn: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 0.6,
-      ease: 'easeOut',
-    },
-  },
-};
-
-/** Scale up with fade */
-export const scaleUp: Variants = {
-  hidden: { scale: 0.8, opacity: 0 },
-  visible: {
-    scale: 1,
-    opacity: 1,
-    transition: {
-      duration: 0.6,
-      ease: ANIMATION_CONFIG.ease.smooth,
-    },
-  },
-};
-
-/** Slide in from left */
-export const slideInLeft: Variants = {
-  hidden: { x: -100, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: ANIMATION_CONFIG.duration.slow,
-      ease: ANIMATION_CONFIG.ease.smooth,
-    },
-  },
-};
-
-/** Slide in from right */
-export const slideInRight: Variants = {
-  hidden: { x: 100, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: ANIMATION_CONFIG.duration.slow,
-      ease: ANIMATION_CONFIG.ease.smooth,
-    },
-  },
-};
-
-// =============================================================================
 // SECTION VIEWPORT ANIMATIONS
 // =============================================================================
 
 /**
  * Section animation variants for scroll-triggered fade/slide effects
  * Animates in when entering viewport, out when leaving
+ * Uses smooth organic easing for aesthetically pleasing transitions
  */
 export const sectionViewportVariants: Variants = {
   hidden: {
     opacity: 0,
-    y: 60,
-    scale: 0.98,
+    y: 40,
+    scale: 0.97,
+    filter: 'blur(6px)',
   },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
+    filter: 'blur(0px)',
     transition: {
-      duration: 0.7,
-      ease: [0.25, 0.1, 0.25, 1],
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -40,
-    scale: 0.98,
-    transition: {
-      duration: 0.5,
-      ease: [0.25, 0.1, 0.25, 1],
+      duration: 0.8,
+      ease: [0.16, 1, 0.3, 1], // More organic ease-out curve
     },
   },
 };
@@ -223,5 +149,5 @@ export const sectionViewportVariants: Variants = {
 /** Section viewport animation configuration */
 export const sectionViewportConfig = {
   amount: 0.2 as const,
-  margin: '-100px' as const,
+  margin: '-80px' as const,
 };

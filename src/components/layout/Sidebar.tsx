@@ -73,9 +73,18 @@ const icons = {
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
   ),
+  ask: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.522 4.82 3.889 6.115l-.578 3.77 4.036-2.082A10.21 10.21 0 0 0 12 18.23c4.97 0 9-3.186 9-7.115C21 7.185 16.97 4 12 4" />
+      <circle cx="12" cy="11" r="0.5" fill="currentColor" />
+      <circle cx="8" cy="11" r="0.5" fill="currentColor" />
+      <circle cx="16" cy="11" r="0.5" fill="currentColor" />
+    </svg>
+  ),
 };
 
 const navItems = [
+  { label: 'Ask', href: '#ask', icon: icons.ask },
   { label: 'Home', href: '#home', icon: icons.home },
   { label: 'About', href: '#about', icon: icons.about },
   { label: 'Skills', href: '#skills', icon: icons.skills },
@@ -88,7 +97,7 @@ export default function Sidebar() {
   const { theme, toggleTheme, colors } = useTheme();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
+  const [activeSection, setActiveSection] = useState('ask');
   const [isDock, setIsDock] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -115,6 +124,8 @@ export default function Sidebar() {
     };
     
     window.addEventListener('scroll', handleScroll);
+    // Run once on mount to set initial active section
+    handleScroll();
     return () => {
       window.removeEventListener('resize', checkViewport);
       window.removeEventListener('scroll', handleScroll);
@@ -349,7 +360,7 @@ export default function Sidebar() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: (!isDock && isExpanded) ? 'flex-start' : 'center',
+                  justifyContent: isDock ? 'center' : 'flex-start',
                   gap: isDock ? 'clamp(4px, 1vw, 12px)' : '12px',
                   padding: isDock ? 'clamp(6px, 2vw, 12px)' : '12px',
                   borderRadius: '10px',
@@ -362,7 +373,6 @@ export default function Sidebar() {
                   whiteSpace: 'nowrap',
                 }}
                 className="interactive"
-                whileHover={{ x: (isExpanded && !isDock) ? 2 : 0 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <span
@@ -396,12 +406,11 @@ export default function Sidebar() {
           
           <motion.button
             onClick={toggleTheme}
-            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: (!isDock && isExpanded) ? 'flex-start' : 'center',
+              justifyContent: isDock ? 'center' : 'flex-start',
               gap: isDock ? 'clamp(4px, 1vw, 12px)' : '12px',
               padding: isDock ? 'clamp(6px, 2vw, 12px)' : '12px',
               borderRadius: '10px',

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
@@ -8,7 +8,7 @@ import { createVariants, containerVariants, sectionViewportVariants, sectionView
 
 export default function About() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.35 });
+  const isInView = useInView(ref, { amount: 0.2 });
   const { theme, colors } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
   
@@ -21,8 +21,9 @@ export default function About() {
     offset: ['start end', 'end start'],
   });
 
-  // Skip parallax on mobile for performance
-  const parallaxY = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [40, -40]);
+  // Use spring to smooth scroll parallax (prevents jank)
+  const parallaxYRaw = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [30, -30]);
+  const parallaxY = useSpring(parallaxYRaw, { stiffness: 80, damping: 25, restDelta: 0.001 });
 
   return (
     <section
@@ -97,10 +98,9 @@ export default function About() {
       >
         {/* Header - animates from left */}
         <motion.div
-          variants={createVariants('left', 80)}
+          variants={createVariants('left', 60)}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <span
             style={{
@@ -146,7 +146,7 @@ export default function About() {
         >
           {/* Bio card - animates from bottom */}
           <motion.div
-            variants={createVariants('bottom', 60)}
+            variants={createVariants('bottom', 50)}
             style={{
               padding: 'clamp(24px, 4vw, 32px)',
               borderRadius: '20px',
@@ -219,7 +219,7 @@ export default function About() {
                 BSE (Hons) Software Engineering
               </p>
               <p style={{ fontSize: 'clamp(11px, 2vw, 13px)', color: colors.gold, marginTop: '8px' }}>
-                CGPA: 3.60 • 2023 - 2026
+                CGPA: 3.95 • 2023 - 2026
               </p>
             </div>
           </motion.div>

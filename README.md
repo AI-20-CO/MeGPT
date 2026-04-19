@@ -49,7 +49,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 portfolio/
 ├── src/
 │   ├── app/                    # Next.js App Router
-│   │   ├── favicon.ico
 │   │   ├── globals.css         # Global styles + responsive breakpoints
 │   │   ├── layout.tsx          # Root layout with providers
 │   │   └── page.tsx            # Home page
@@ -62,6 +61,7 @@ portfolio/
 │   │   │   ├── Experience.tsx  # Work experience timeline
 │   │   │   ├── Projects.tsx    # Portfolio projects gallery
 │   │   │   ├── Contact.tsx     # Contact information
+│   │   │   ├── ChatLanding.tsx # AI chat landing section
 │   │   │   └── index.ts
 │   │   │
 │   │   ├── layout/             # Layout components
@@ -77,15 +77,11 @@ portfolio/
 │   │       └── index.ts
 │   │
 │   ├── config/                 # Configuration
-│   │   ├── theme.ts            # Theme colors, animation, breakpoints
-│   │   ├── site.ts             # Site configuration
+│   │   ├── theme.ts            # Theme colors and design tokens
 │   │   └── index.ts
 │   │
 │   ├── context/                # React Context providers
 │   │   ├── ThemeContext.tsx    # Theme state management
-│   │   └── index.ts
-│   │
-│   ├── hooks/                  # Custom React hooks (placeholder)
 │   │   └── index.ts
 │   │
 │   ├── types/                  # TypeScript type definitions
@@ -95,7 +91,13 @@ portfolio/
 │       ├── animations.ts       # Framer Motion animation presets
 │       └── index.ts
 │
+├── backend/                    # Python FastAPI backend
+│   ├── main.py                 # API endpoints
+│   ├── knowledge.yaml          # AI knowledge base
+│   └── requirements.txt
+│
 ├── public/                     # Static assets
+│   └── favicon.png
 ├── package.json
 ├── tsconfig.json
 ├── next.config.ts
