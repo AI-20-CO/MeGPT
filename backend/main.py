@@ -45,6 +45,8 @@ def load_knowledge_base():
 
 KNOWLEDGE = load_knowledge_base()
 
+SECRET_CODE = KNOWLEDGE.get("SecretCode", {})
+
 # Initialize LLM (Groq - Free tier)
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",  # Free, fast, smart
@@ -56,6 +58,7 @@ llm = ChatGroq(
 def create_system_prompt():
     kb = KNOWLEDGE
     rules = kb.get("assistant_rules", {})
+    secret_code = kb.get("SecretCode", {})
     
     return f"""You are a helpful AI assistant for {kb['personal']['name']}'s portfolio website.
 
@@ -78,6 +81,10 @@ EXPERIENCE:
 
 HOBBIES:
 {', '.join(kb.get('hobbies', []))}
+
+SECRET CODE:
+- Question: {secret_code.get('Question', '')}
+- Answer: {secret_code.get('answer', '')}
 
 CONTACT:
 {yaml.dump(kb.get('contact', {}), default_flow_style=False)}
@@ -119,6 +126,18 @@ class ChatResponse(BaseModel):
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     try:
+        secret_question = SECRET_CODE.get("Question", "").lower().strip()
+        secret_answer = SECRET_CODE.get("answer", "")
+        if secret_question and secret_question in request.message.lower():
+            return ChatResponse(
+                response=secret_answer,
+                suggested_questions=[
+                    "Tell me about Ayaan's projects",
+                    "What are Ayaan's best skills?",
+                    "How can I contact Ayaan?"
+                ]
+            )
+
         # Build message history
         messages = []
         for msg in request.history[-10:]:  # Keep last 10 messages for context
