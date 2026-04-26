@@ -122,7 +122,9 @@ export default function Hero() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      // Check for touch device OR small screen
+      const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+      setIsMobile(isTouchDevice || window.innerWidth <= 768);
     };
     
     // Initial check
@@ -133,55 +135,52 @@ export default function Hero() {
   }, []);
   
   // Aesthetic Parallax Path mapped to sections
-  // Maps roughly to: Hero(0), About(0.2), Skills(0.4), Experience(0.6), Projects(0.8), Contact(1)
+  // With ChatLanding prepended, sections now map roughly to:
+  // ChatLanding(0-0.14), Hero(0.14), About(0.31), Skills(0.48), Experience(0.61), Projects(0.74), Contact(0.86-1)
+  // During ChatLanding (0-0.12): orb holds at Hero center position (the arc peeking into landing page)
+  // At Hero (0.14): orb is centered — then the original weaving animation continues through remaining sections
   
-  // Weaves delicately, but centers during Experience (0.6) then expands away
+  // X-Position: Hold centered during landing, then original weaving pattern
+  // Smoother transitions with additional intermediate keyframes
   const orbMainXRaw = useTransform(
     fullPageProgress,
-    [0, 0.2, 0.4, 0.46, 0.55, 0.7, 0.8, 1],
-    // If mobile, keep it more centered due to limited width
+    [0, 0.12, 0.14, 0.31, 0.38, 0.48, 0.54, 0.61, 0.74, 0.83, 1],
     isMobile 
-      ? ['-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%']
-      : ['-50%', '-20%', '-105%', '-105%', '-50%', '-50%', '-75%', '-50%']
+      ? ['-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%', '-50%']
+      : ['-50%', '-50%', '-50%', '-15%', '-70%', '-115%', '-80%', '15%', '-50%', '-75%', '-50%']
   );
 
-  // Y-Position: Carefully calibrated to sync with viewports
-  // 0% = Hero, 20% = About, 40% = Skills, 60% = Experience, 80% = Projects, 100% = Contact
-  // Using vh units mapping to ensure it stays in the viewport regardless of device height
+  // Y-Position: Hold at 0vh during landing (orb centered in Hero section = arc visible on landing)
+  // Then follows sections at the same vh distances from Hero - smoother intermediate steps
   const orbMainYRaw = useTransform(
     fullPageProgress, 
-    [0, 0.2, 0.4, 0.46, 0.55, 0.7, 0.8, 1], 
+    [0, 0.12, 0.14, 0.31, 0.38, 0.48, 0.54, 0.61, 0.74, 0.83, 1], 
     isMobile
-      ? ['0vh', '100vh', '200vh', '200vh', '330vh', '350vh', '400vh', '500vh']
-      : ['0vh', '120vh', '240vh', '240vh', '380vh', '410vh', '480vh', '600vh']
+      ? ['0vh', '0vh', '0vh', '100vh', '150vh', '200vh', '200vh', '330vh', '420vh', '400vh', '500vh']
+      : ['0vh', '0vh', '0vh', '120vh', '180vh', '240vh', '280vh', '340vh', '480vh', '480vh', '600vh']
   );
   
-  // Breaths dynamically. Around Experience (0.6), it centers and is medium size.
-  // Between Experience (0.6) and Projects (0.8), it expands massively as a transition
+  // Scale: Hold at landing size during landing, shrink to fit centered at Hero, then original breathing pattern
   const orbMainScaleRaw = useTransform(
     fullPageProgress, 
-    [0, 0.1, 0.2, 0.3, 0.4, 0.46, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1], 
-    // Mobile uses slightly smaller scales to prevent overflow issues. Hero (0) is adjusted slightly larger now.
+    [0, 0.12, 0.14, 0.23, 0.31, 0.38, 0.48, 0.54, 0.57, 0.61, 0.66, 0.74, 0.83, 0.91, 1], 
     isMobile
-      ? [0.98, 0.5, 1.2, 0.5, 1.4, 1.4, 0.45, 1.3, 1.6, 2.0, 0.4, 1.3, 0.5]
-      : [1.02, 0.5, 1.4, 0.5, 1.8, 1.8, 0.45, 1.4, 2.0, 2.4, 0.4, 1.5, 0.5]
+      ? [0.98, 0.98, 0.55, 0.5, 1.2, 0.8, 1.4, 1.4, 0.45, 1.3, 1.6, 1.5, 0.4, 1.3, 0.5]
+      : [1.02, 1.02, 0.6, 0.5, 1.4, 0.75, 1.5, 1.5, 0.6, 1.8, 2.0, 1.8, 0.4, 1.5, 0.5]
   );
 
-  // Opacity adjustments:
-  // Is visible during Experience (0.6), massively faded at Projects (0.8 and beyond)
-  // Mobile uses lower opacity for cleaner, more professional look
+  // Opacity: Hold at Hero opacity during landing, then original fade pattern
   const orbMainOpacityRaw = useTransform(
     fullPageProgress,
-    [0, 0.1, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+    [0, 0.12, 0.14, 0.23, 0.38, 0.57, 0.61, 0.66, 0.74, 0.83, 0.91, 1],
     isMobile
-      ? [0.4, 0.15, 0.25, 0.12, 0.35, 0.03, 0.0, 0.0, 0.0] // Lower opacity on mobile
-      : [0.6, 0.25, 0.4, 0.2, 0.5, 0.05, 0.0, 0.0, 0.0] // Fades entirely to 0 at 0.8 (Projects) and stays invisible
+      ? [0.4, 0.4, 0.4, 0.15, 0.2, 0.12, 0.35, 0.35, 0.35, 0.0, 0.0, 0.0]
+      : [0.5, 0.5, 0.5, 0.25, 0.35, 0.2, 0.5, 0.5, 0.45, 0.0, 0.0, 0.0]
   );
   
-  // Faster settling spring config - higher damping, lower mass for less oscillation
-  // On mobile, use extremely high damping to eliminate bounce/glitch on scroll start
+  // Spring config for smooth orb movement
   const orbSpringConfig = isMobile 
-    ? { damping: 100, stiffness: 300, mass: 0.1, restDelta: 0.01 } // Near-instant on mobile
+    ? { damping: 100, stiffness: 300, mass: 0.1, restDelta: 0.01 }
     : { damping: 60, stiffness: 80, mass: 0.8, restDelta: 0.001 };
   const orbMainX = useSpring(orbMainXRaw, orbSpringConfig);
   const orbMainY = useSpring(orbMainYRaw, orbSpringConfig);

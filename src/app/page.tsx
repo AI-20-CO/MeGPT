@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { ThemeProvider, useTheme } from '@/context';
 import { LoadingScreen } from '@/components/ui';
 import { Sidebar } from '@/components/layout';
-import { Hero, About, Skills, Experience, Projects, Contact } from '@/components/sections';
+import { Hero, About, Skills, Experience, Projects, Contact, ChatLanding } from '@/components/sections';
 import { useScroll, useTransform, motion, useSpring } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 
@@ -104,6 +104,7 @@ function MainContent() {
           pointerEvents: 'none',
           transition: 'background 0.5s ease',
         }} />
+        <ChatLanding />
         <Hero />
         <About />
         <Skills />

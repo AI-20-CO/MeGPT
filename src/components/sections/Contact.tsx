@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { FloatingOrb } from '@/components/ui';
@@ -9,7 +9,7 @@ import { createVariants, containerVariants, sectionViewportVariants, sectionView
 export default function Contact() {
   const ref = useRef(null);
   const { theme, colors } = useTheme();
-  const isInView = useInView(ref, { amount: 0.35 });
+  const isInView = useInView(ref, { amount: 0.2 });
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -22,9 +22,11 @@ export default function Contact() {
     offset: ['start end', 'end start'],
   });
 
-  // Skip transforms on mobile
-  const y = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [50, -50]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], isMobile ? [1, 1, 1] : [0.95, 1, 0.95]);
+  // Use spring to smooth scroll transforms (prevents jank)
+  const yRaw = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [40, -40]);
+  const scaleRaw = useTransform(scrollYProgress, [0, 0.5, 1], isMobile ? [1, 1, 1] : [0.96, 1, 0.96]);
+  const y = useSpring(yRaw, { stiffness: 80, damping: 25, restDelta: 0.001 });
+  const scale = useSpring(scaleRaw, { stiffness: 80, damping: 25, restDelta: 0.001 });
 
   const contactLinks = [
     { 
@@ -133,7 +135,7 @@ export default function Contact() {
       >
         {/* Header */}
         <motion.div
-          variants={createVariants('top', 80)}
+          variants={createVariants('top', 60)}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
         >
@@ -204,10 +206,10 @@ export default function Contact() {
               href={link.href}
               target={link.label === 'LinkedIn' || link.label === 'GitHub' ? '_blank' : undefined}
               rel={link.label === 'LinkedIn' || link.label === 'GitHub' ? 'noopener noreferrer' : undefined}
-              variants={createVariants(index === 0 ? 'left' : index === 2 ? 'right' : 'bottom', 50)}
+              variants={createVariants(index === 0 ? 'left' : index === 2 ? 'right' : 'bottom', 40)}
               onMouseEnter={() => setHoveredLink(link.label)}
               onMouseLeave={() => setHoveredLink(null)}
-              whileHover={{ y: -6, scale: 1.02 }}
+              whileHover={{ y: -5, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="contact-card"
               style={{
