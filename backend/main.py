@@ -24,14 +24,27 @@ app = FastAPI(
     version="1.0.0"
 )
 
+DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://ayaanizhar.com",
+    "https://www.ayaanizhar.com",
+    "https://megpt-eta.vercel.app",
+]
+
+extra_allowed_origins = [
+    origin.strip()
+    for origin in os.getenv("ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
+allowed_origins = DEFAULT_ALLOWED_ORIGINS + extra_allowed_origins
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://ayaanizhar.com",  # Update with your domain
-        "https://www.ayaanizhar.com",
-    ],
+    allow_origins=allowed_origins,
+    # Allow Vercel preview and production domains such as *.vercel.app.
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -71,13 +84,6 @@ SKILLS:
 - Best Skills: {', '.join(kb['skills'].get('best_skills', []))}
 - Languages: {', '.join([s['name'] for s in kb['skills'].get('languages', [])])}
 - Frameworks: {', '.join([s['name'] for s in kb['skills'].get('frameworks', [])])}
-- Tools: {', '.join(kb['skills'].get('tools', []))}
-
-PROJECTS:
-{yaml.dump(kb.get('projects', {}), default_flow_style=False)}
-
-EXPERIENCE:
-{yaml.dump(kb.get('experience', {}), default_flow_style=False)}
 
 HOBBIES:
 {', '.join(kb.get('hobbies', []))}
