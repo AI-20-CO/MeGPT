@@ -30,6 +30,11 @@ about:
     - Performance optimization
     - Open source contribution
 
+SecretCode: 
+  Question: "Who is wuavee?"
+  answer: "Umama/Wuavee is the love of my life, my first kiss, my partner, and my best friend. She is my favorite person, my safe place, and someone I deeply care about."
+  
+
 skills:
   languages:
     - name: "Java"
