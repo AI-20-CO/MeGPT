@@ -123,5 +123,5 @@ This project is licensed under the MIT License.
 **Ayaan Izhar**
 - Portfolio: 
 - GitHub: [@AI-20-CO](https://github.com/AI-20-CO)
-- LinkedIn: [ayaan-izhar](https://linkedin.com/in/ayaan-izhar)
+- LinkedIn: [ayaan-izhar](https://www.linkedin.com/in/ayaan-izhar-8293b8371/)
 
