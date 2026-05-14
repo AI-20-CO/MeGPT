@@ -13,15 +13,11 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo, t
 import { DARK_COLORS, LIGHT_COLORS } from '@/config/theme';
 import type { Theme, ThemeColors, ThemeContextType } from '@/types';
 
-// =============================================================================
 // CONTEXT SETUP
-// =============================================================================
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// =============================================================================
 // PROVIDER COMPONENT
-// =============================================================================
 
 interface ThemeProviderProps {
   readonly children: ReactNode;
@@ -81,9 +77,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   );
 }
 
-// =============================================================================
 // HOOK
-// =============================================================================
 
 /**
  * Custom hook to access theme context

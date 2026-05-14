@@ -79,3 +79,11 @@ backend/.env
 
 # vercel
 .vercel
+
+# Claude Code project-local config (skills, hooks, settings)
+.claude/
+
+# Python test artifacts
+.pytest_cache/
+.coverage
+htmlcov/

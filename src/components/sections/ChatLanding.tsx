@@ -326,6 +326,8 @@ export default function ChatLanding({ onEnterPortfolio }: ChatLandingProps) {
                         fontSize: '14px',
                         lineHeight: 1.7,
                         backdropFilter: 'blur(10px)',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
                       }}
                     >
                       {message.content}
