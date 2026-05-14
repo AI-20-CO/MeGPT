@@ -68,25 +68,46 @@ KNOWLEDGE = load_knowledge_base()
 
 SECRET_CODE = KNOWLEDGE.get("SecretCode", {})
 
-# LLM clients — main is 70B for answers, normalizer is 8B for cheap typo-fixing
-# Temperature 0.85 to keep phrasing varied across repeat questions; the facts come
-# from the knowledge base so higher temperature won't drift content, only wording.
-# max_tokens dropped from 500 to 300: real answers fit comfortably and we cap the
-# worst-case Groq spend per call.
-llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
-    temperature=0.85,
-    max_tokens=300,
-)
+# LLM clients are lazy-initialized on first use rather than at module import.
+# Rationale: ChatGroq's constructor validates GROQ_API_KEY immediately, so an
+# eager init at import-time means a missing key crashes the whole FastAPI app
+# before any route can serve — including /api/health and /api/suggestions, which
+# don't need the LLM at all. Lazy init lets the service stay up and surfaces the
+# missing-key error only on /api/chat, where it belongs and where the exception
+# handler can return a clean 500 + log the cause server-side.
+#
+# Tests monkey-patch `llm` / `normalizer_llm` directly with a RunnableLambda;
+# the getter checks `is not None` first, so a patched value short-circuits the
+# real ChatGroq construction.
+llm: Optional[ChatGroq] = None
+normalizer_llm: Optional[ChatGroq] = None
 
-# Used only by _normalize_via_llm — fixing typos is trivial; 8B is faster and has
-# its own (much larger) Groq daily token cap, so a rescue call doesn't drain the
-# main 70B budget. Low temperature for deterministic output.
-normalizer_llm = ChatGroq(
-    model="llama-3.1-8b-instant",
-    temperature=0.0,
-    max_tokens=120,
-)
+
+def _get_llm() -> ChatGroq:
+    """Main 70B model for answers. Temperature 0.85 keeps phrasing varied across
+    repeat questions; max_tokens=300 caps worst-case Groq spend per call."""
+    global llm
+    if llm is None:
+        llm = ChatGroq(
+            model="llama-3.3-70b-versatile",
+            temperature=0.85,
+            max_tokens=300,
+        )
+    return llm
+
+
+def _get_normalizer_llm() -> ChatGroq:
+    """8B model used only by _normalize_via_llm for fixing typos. Faster than the
+    70B and has its own (much larger) Groq daily token cap, so a rescue call
+    doesn't drain the main budget. Low temperature for deterministic output."""
+    global normalizer_llm
+    if normalizer_llm is None:
+        normalizer_llm = ChatGroq(
+            model="llama-3.1-8b-instant",
+            temperature=0.0,
+            max_tokens=120,
+        )
+    return normalizer_llm
 
 
 # Fuzzy trigger matching (lazy-load signature takes by user intent)
@@ -202,7 +223,7 @@ def _normalize_via_llm(user_message: str) -> Optional[str]:
             ),
             ("human", "{input}"),
         ])
-        result = (prompt | normalizer_llm).invoke({"input": user_message})
+        result = (prompt | _get_normalizer_llm()).invoke({"input": user_message})
         cleaned = (result.content or "").strip().strip('"').strip("'")
         return cleaned or None
     except Exception as e:
@@ -390,7 +411,7 @@ async def chat(request: ChatRequest):
                 MessagesPlaceholder(variable_name="history"),
                 ("human", "{input}"),
             ])
-            unlocked_response = await (unlocked_prompt | llm).ainvoke({
+            unlocked_response = await (unlocked_prompt | _get_llm()).ainvoke({
                 "history": history_msgs,
                 "input": request.message,
             })
@@ -438,7 +459,7 @@ async def chat(request: ChatRequest):
             MessagesPlaceholder(variable_name="history"),
             ("human", "{input}"),
         ])
-        response = await (prompt | llm).ainvoke({
+        response = await (prompt | _get_llm()).ainvoke({
             "history": history_msgs,
             "input": request.message,
         })
