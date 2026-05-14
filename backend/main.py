@@ -5,16 +5,24 @@ FastAPI + LangChain + Groq (Free LLM)
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, Field
+from typing import Optional, List, Literal
+import asyncio
+import re
 import yaml
 import os
+import logging
 from dotenv import load_dotenv
+
+# Fuzzy trigger matching for lazy-loading signature takes.
+from rapidfuzz import fuzz
 
 # LangChain imports
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage
+
+logger = logging.getLogger("portfolio_chat")
 
 load_dotenv()
 
@@ -60,19 +68,223 @@ KNOWLEDGE = load_knowledge_base()
 
 SECRET_CODE = KNOWLEDGE.get("SecretCode", {})
 
-# Initialize LLM (Groq - Free tier)
+# LLM clients — main is 70B for answers, normalizer is 8B for cheap typo-fixing
+# Temperature 0.85 to keep phrasing varied across repeat questions; the facts come
+# from the knowledge base so higher temperature won't drift content, only wording.
+# max_tokens dropped from 500 to 300: real answers fit comfortably and we cap the
+# worst-case Groq spend per call.
 llm = ChatGroq(
-    model="llama-3.3-70b-versatile",  # Free, fast, smart
-    temperature=0.7,
-    max_tokens=500,
+    model="llama-3.3-70b-versatile",
+    temperature=0.85,
+    max_tokens=300,
 )
 
-# Create system prompt from knowledge base
-def create_system_prompt():
+# Used only by _normalize_via_llm — fixing typos is trivial; 8B is faster and has
+# its own (much larger) Groq daily token cap, so a rescue call doesn't drain the
+# main 70B budget. Low temperature for deterministic output.
+normalizer_llm = ChatGroq(
+    model="llama-3.1-8b-instant",
+    temperature=0.0,
+    max_tokens=120,
+)
+
+
+# Fuzzy trigger matching (lazy-load signature takes by user intent)
+
+# Above-threshold means "this trigger is in the message." Tuned to catch
+# single-character typos without false-positiving short words.
+FUZZY_PARTIAL_THRESHOLD = 82
+FUZZY_TOKEN_SET_THRESHOLD = 78
+
+# When fuzzy + normalizer both fail, ship these broad takes so the user gets a
+# strong on-brand answer rather than a generic LLM response. Topics here MUST
+# match the `topic:` field in knowledge.yaml signature_takes exactly.
+FALLBACK_TAKE_TOPICS = [
+    "projects",
+    "professional experience at Experian",
+    "strongest programming language",
+    "hobbies and how Ayaan spends time",
+]
+
+# Min characters before fuzzy comparison — single-letter "triggers" like "r"
+# would otherwise match everything. Triggers shorter than this fall back to
+# strict substring check.
+MIN_FUZZY_TRIGGER_LEN = 4
+
+
+def _squash(s: str) -> str:
+    """Collapse repeated characters: 'spoorss' -> 'spors', 'plyss' -> 'plys'.
+
+    Knocks out the most common typo class (held-down key) before fuzzy match,
+    pushing those queries into the free Path A instead of the +120-token Path B.
+    """
+    return re.sub(r"(.)\1+", r"\1", s.lower())
+
+
+def _trigger_hits_message(trigger: str, user_message: str, squashed_message: str) -> bool:
+    """Return True if `trigger` is present in `user_message` after light fuzzing.
+
+    Pipeline: strict substring (cheap) -> [≤2-word triggers only] partial_ratio
+    + token_set_ratio. Long triggers (>2 words) only match on strict substring
+    because fuzzy-matching multi-word triggers picks up shared lexical filler
+    like "tell me about" or "what does he do" and false-positives on unrelated
+    queries. Short triggers (<MIN_FUZZY_TRIGGER_LEN chars) also fall back to
+    strict substring to avoid matching common letter clusters.
+    """
+    trigger = trigger.lower().strip()
+    if not trigger:
+        return False
+
+    msg = user_message.lower()
+
+    # Strict substring on the raw message is the cheapest hit.
+    if trigger in msg:
+        return True
+
+    # Short triggers and long multi-word triggers do not enter the fuzzy path.
+    if len(trigger) < MIN_FUZZY_TRIGGER_LEN or len(trigger.split()) > 2:
+        return False
+
+    # Strict substring on the squashed message catches double-letter typos
+    # ("spoorss" -> "spors" still doesn't contain "sport" — that's what
+    # partial_ratio handles next).
+    squashed_trigger = _squash(trigger)
+    if squashed_trigger in squashed_message:
+        return True
+
+    # rapidfuzz: partial_ratio finds the best matching window of the trigger
+    # inside the message; token_set_ratio handles word reorder + extra noise.
+    if fuzz.partial_ratio(squashed_trigger, squashed_message) >= FUZZY_PARTIAL_THRESHOLD:
+        return True
+    if fuzz.token_set_ratio(squashed_trigger, squashed_message) >= FUZZY_TOKEN_SET_THRESHOLD:
+        return True
+
+    return False
+
+
+def _match_takes(user_message: str) -> list[dict]:
+    """Scan all signature_takes and return the ones whose triggers match the message.
+
+    Pure Python, no API call, runs in microseconds for the take counts we have.
+    """
+    takes = KNOWLEDGE.get("signature_takes", []) or []
+    squashed_message = _squash(user_message)
+    matched: list[dict] = []
+    for t in takes:
+        for trigger in t.get("triggers", []) or []:
+            if _trigger_hits_message(trigger, user_message, squashed_message):
+                matched.append(t)
+                break
+    return matched
+
+
+def _fallback_takes() -> list[dict]:
+    """Broad take set for when nothing matches — keeps the answer high-quality
+    instead of falling back to a generic LLM reply."""
+    takes = KNOWLEDGE.get("signature_takes", []) or []
+    topic_to_take = {t.get("topic"): t for t in takes}
+    return [topic_to_take[topic] for topic in FALLBACK_TAKE_TOPICS if topic in topic_to_take]
+
+
+def _normalize_via_llm(user_message: str) -> Optional[str]:
+    """Use the 8B model to fix typos. Returns cleaned text or None on failure.
+
+    Wrapped so a normalizer failure (rate-limit, network) drops cleanly to the
+    fallback path instead of bubbling a 500 to the user.
+    """
+    try:
+        prompt = ChatPromptTemplate.from_messages([
+            (
+                "system",
+                "You are a query normalizer. Fix typos and minor grammar in the user's "
+                "message. Return ONLY the cleaned text — no explanation, no quotes, no "
+                "preamble. If the message is already clean, return it unchanged.",
+            ),
+            ("human", "{input}"),
+        ])
+        result = (prompt | normalizer_llm).invoke({"input": user_message})
+        cleaned = (result.content or "").strip().strip('"').strip("'")
+        return cleaned or None
+    except Exception as e:
+        logger.warning("normalizer call failed: %s", e)
+        return None
+
+
+def _select_takes(user_message: str) -> tuple[list[dict], str]:
+    """Decide which takes to ship for this turn.
+
+    Returns (takes, path_label) where path_label is one of:
+      - "fuzzy"      : matched on the raw message
+      - "normalized" : matched only after the LLM normalized typos
+      - "fallback"   : nothing matched, broad default set
+    """
+    # Step 1-3: fuzzy with squash + partial_ratio + token_set_ratio.
+    matched = _match_takes(user_message)
+    if matched:
+        return matched, "fuzzy"
+
+    # Step 4-5: small LLM fixes typos, retry fuzzy.
+    cleaned = _normalize_via_llm(user_message)
+    if cleaned and cleaned.lower() != user_message.lower():
+        matched = _match_takes(cleaned)
+        if matched:
+            return matched, "normalized"
+
+    # Step 7: broad fallback so the user gets a quality answer instead of nothing.
+    return _fallback_takes(), "fallback"
+
+
+# System prompt builder — static parts cached at boot; takes selected per request
+
+def _render_takes(takes: list[dict]) -> str:
+    """Render a list of take dicts as the BACKGROUND KNOWLEDGE section.
+
+    NOTE: TRIGGERS are deliberately NOT included in the rendered prompt — they
+    were originally just hints to the LLM, and now Python does the trigger
+    matching. Dropping them saves ~150 tokens per loaded take.
+    """
+    if not takes:
+        return ""
+    header = (
+        "BACKGROUND KNOWLEDGE — facts and perspectives you have internalized about Ayaan.\n"
+        "These are CONTENT SOURCES, NOT SCRIPTS. Convey the substance but vary your opening,\n"
+        "sentence structure, and ordering every single time. NEVER copy the wording. NEVER\n"
+        "start two consecutive answers with the same phrase. Pick only the facts that fit the\n"
+        "user's actual question — don't dump every bullet."
+    )
+    rendered = [header]
+    for t in takes:
+        rendered.append(f"\n- TOPIC: {t.get('topic', '')}")
+        rendered.append(f"  NOTES:\n{t.get('take', '').strip()}")
+    return "\n".join(rendered)
+
+
+def _build_static_parts(mode: str = "default") -> str:
+    """The always-on portion of the system prompt — built once at boot per mode.
+
+    Does NOT include the BACKGROUND KNOWLEDGE block; that's appended per request.
+    """
     kb = KNOWLEDGE
     rules = kb.get("assistant_rules", {})
-    secret_code = kb.get("SecretCode", {})
-    
+
+    if mode == "unlocked":
+        private_block = (
+            "UNLOCKED PRIVATE CONTEXT (the user just supplied the code phrase — this turn only):\n"
+            "- You MAY now discuss Ayaan's love life, but only using the source material below.\n"
+            "- Source material (REPHRASE warmly in your own voice, do not recite verbatim):\n"
+            f"  \"{SECRET_CODE.get('answer', '')}\"\n"
+            "- Stay 3–5 sentences. Do not invent details beyond the source.\n"
+            "- After answering, gently invite the user back to portfolio topics."
+        )
+    else:
+        private_block = (
+            "PRIVATE TOPICS (DO NOT DISCUSS):\n"
+            "- Ayaan's personal life, relationships, love life, dating, marriage status, partners.\n"
+            "- Anyone named Wuavee, Wuava, or Umama.\n"
+            "- If asked about any of these, reply exactly: \"I am not allowed to share his personal life unless you can give me the code words.\" and nothing more.\n"
+            "- Do not speculate, hint, or paraphrase. Do not acknowledge that a secret exists."
+        )
+
     return f"""You are a helpful AI assistant for {kb['personal']['name']}'s portfolio website.
 
 ABOUT {kb['personal']['name'].upper()}:
@@ -85,19 +297,17 @@ SKILLS:
 - Languages: {', '.join([s['name'] for s in kb['skills'].get('languages', [])])}
 - Frameworks: {', '.join([s['name'] for s in kb['skills'].get('frameworks', [])])}
 
-HOBBIES:
+TECHNICAL INTERESTS (use only when the user asks specifically about technical/engineering interests — NOT for general "hobbies / free time / what do you like" questions, those have a dedicated signature take):
 {', '.join(kb.get('hobbies', []))}
 
-SECRET CODE:
-- Question: {secret_code.get('Question', '')}
-- Answer: {secret_code.get('answer', '')}
+{private_block}
 
 CONTACT:
 {yaml.dump(kb.get('contact', {}), default_flow_style=False)}
 
 RESPONSE GUIDELINES:
 - Personality: {', '.join(rules.get('personality', []))}
-- Style: {', '.join(rules.get('response_style', []))}
+- Style: {chr(10).join(['  • ' + s for s in rules.get('response_style', [])])}
 
 GUARDRAILS (STRICT):
 {chr(10).join(['- ' + g for g in rules.get('guardrails', [])])}
@@ -108,21 +318,47 @@ OFF-TOPIC RESPONSE:
 SUGGESTED TOPICS (guide users here if they seem lost):
 {', '.join(rules.get('suggested_topics', []))}
 
-Remember: Be friendly, helpful, and stay focused on {kb['personal']['name']}'s portfolio. 
-If you don't have information about something, say so and suggest they contact {kb['personal']['name']} directly.
-Keep responses concise but informative (2-4 sentences typically, more for detailed questions).
+Remember: speak as if Ayaan trained you personally. Sound natural, not templated. Vary your
+openings — never start two answers in the same conversation with the same phrase. Reframe a
+question only when it's genuinely vague, and even then do it conversationally. Density over
+length: 3–6 sentences unless the question genuinely needs more.
 """
 
-SYSTEM_PROMPT = create_system_prompt()
+
+# Built once at boot — the static parts of the prompt never depend on the user's message.
+STATIC_PROMPT_DEFAULT = _build_static_parts("default")
+STATIC_PROMPT_UNLOCKED = _build_static_parts("unlocked")
+
+
+def build_system_prompt_for(user_message: str, mode: str = "default") -> tuple[str, str]:
+    """Compose the per-request system prompt: static parts + lazily selected takes.
+
+    Returns (prompt_text, path_label) — path_label is "fuzzy" / "normalized" /
+    "fallback" / "unlocked" for observability.
+    """
+    static = STATIC_PROMPT_UNLOCKED if mode == "unlocked" else STATIC_PROMPT_DEFAULT
+    if mode == "unlocked":
+        # On unlock, ship the projects + experience takes so the LLM has something
+        # to steer back to after answering. No selection cost here.
+        takes = _fallback_takes()
+        path = "unlocked"
+    else:
+        takes, path = _select_takes(user_message)
+    takes_block = _render_takes(takes)
+    return f"{static}\n{takes_block}\n", path
 
 # Request/Response models
+# Limits chosen to bound worst-case Groq token spend and protect against payload
+# bombs: a 2 kB message ≈ 500 tokens; history items can be longer because they
+# include past assistant replies; history is hard-capped at 20 entries (the
+# handler also slices to the last 10 for context).
 class ChatMessage(BaseModel):
-    role: str  # "user" or "assistant"
-    content: str
+    role: Literal["user", "assistant"]
+    content: str = Field(..., min_length=1, max_length=4000)
 
 class ChatRequest(BaseModel):
-    message: str
-    history: Optional[List[ChatMessage]] = []
+    message: str = Field(..., min_length=1, max_length=2000)
+    history: List[ChatMessage] = Field(default_factory=list, max_length=20)
 
 class ChatResponse(BaseModel):
     response: str
@@ -132,55 +368,97 @@ class ChatResponse(BaseModel):
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     try:
-        secret_question = SECRET_CODE.get("Question", "").lower().strip()
-        secret_answer = SECRET_CODE.get("answer", "")
-        if secret_question and secret_question in request.message.lower():
+        user_lower = request.message.lower()
+
+        # Build message history once — used by both the unlocked and default branches.
+        history_msgs = []
+        for msg in request.history[-10:]:
+            if msg.role == "user":
+                history_msgs.append(HumanMessage(content=msg.content))
+            else:
+                history_msgs.append(AIMessage(content=msg.content))
+
+        # 1) Code phrase unlocks the private context. Route through the LLM with
+        #    the unlocked system prompt so the answer is rephrased naturally rather
+        #    than returned verbatim. Unlock path does not call the normalizer, so
+        #    the prompt build is a fast pure-Python call — no thread offload needed.
+        code_phrase = SECRET_CODE.get("Question", "").lower().strip()
+        if code_phrase and code_phrase in user_lower:
+            system_text, path = build_system_prompt_for(request.message, mode="unlocked")
+            unlocked_prompt = ChatPromptTemplate.from_messages([
+                ("system", system_text),
+                MessagesPlaceholder(variable_name="history"),
+                ("human", "{input}"),
+            ])
+            unlocked_response = await (unlocked_prompt | llm).ainvoke({
+                "history": history_msgs,
+                "input": request.message,
+            })
+            logger.info("chat path=%s", path)
             return ChatResponse(
-                response=secret_answer,
+                response=unlocked_response.content,
                 suggested_questions=[
                     "Tell me about Ayaan's projects",
                     "What are Ayaan's best skills?",
-                    "How can I contact Ayaan?"
-                ]
+                    "How can I contact Ayaan?",
+                ],
             )
 
-        # Build message history
-        messages = []
-        for msg in request.history[-10:]:  # Keep last 10 messages for context
-            if msg.role == "user":
-                messages.append(HumanMessage(content=msg.content))
-            else:
-                messages.append(AIMessage(content=msg.content))
-        
-        # Add current message
-        messages.append(HumanMessage(content=request.message))
-        
-        # Create prompt template
+        # 2) Personal-life questions WITHOUT the code phrase are gated server-side
+        #    so the LLM never sees the topic and can't be coaxed into leaking it.
+        gatekeeper = SECRET_CODE.get(
+            "gatekeeper_response",
+            "I am not allowed to share his personal life unless you can give me the code words.",
+        )
+        personal_keywords = SECRET_CODE.get("personal_keywords", [])
+        if any(k.lower() in user_lower for k in personal_keywords):
+            logger.info("chat path=gated")
+            return ChatResponse(
+                response=gatekeeper,
+                suggested_questions=[
+                    "What are Ayaan's best skills?",
+                    "Tell me about Ayaan's projects",
+                    "What's Ayaan's tech stack?",
+                ],
+            )
+
+        # 3) Normal flow — lazily select signature takes for this turn so we only
+        #    ship the LLM the context that's actually relevant.
+        #
+        #    build_system_prompt_for() in default mode may invoke the sync normalizer
+        #    LLM (rare — only when fuzzy matching fails). Run it in a thread so the
+        #    asyncio event loop stays free for other concurrent requests. Fast paths
+        #    (fuzzy match, fallback) finish in microseconds; the thread-pool hop is
+        #    negligible there and pays off when the normalizer actually fires.
+        system_text, path = await asyncio.to_thread(
+            build_system_prompt_for, request.message, "default"
+        )
         prompt = ChatPromptTemplate.from_messages([
-            ("system", SYSTEM_PROMPT),
+            ("system", system_text),
             MessagesPlaceholder(variable_name="history"),
-            ("human", "{input}")
+            ("human", "{input}"),
         ])
-        
-        # Create chain
-        chain = prompt | llm
-        
-        # Get response
-        response = chain.invoke({
-            "history": messages[:-1],  # All but the last message
-            "input": request.message
+        response = await (prompt | llm).ainvoke({
+            "history": history_msgs,
+            "input": request.message,
         })
-        
-        # Generate suggested follow-up questions based on context
+
         suggested = get_suggested_questions(request.message)
-        
+
+        logger.info("chat path=%s", path)
         return ChatResponse(
             response=response.content,
-            suggested_questions=suggested
+            suggested_questions=suggested,
         )
-        
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Chat error: {str(e)}")
+        # Log full details server-side, return a generic message to the client so
+        # we don't leak Groq error payloads / org IDs to the browser.
+        logger.exception("chat error: %s", e)
+        raise HTTPException(
+            status_code=500,
+            detail="The assistant is temporarily unavailable. Please try again in a moment.",
+        )
 
 def get_suggested_questions(user_message: str) -> List[str]:
     """Generate contextual follow-up questions"""

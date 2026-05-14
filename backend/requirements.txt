@@ -11,3 +11,10 @@ langchain-core==0.3.0
 
 # Utilities
 pyyaml==6.0.1
+
+# Fuzzy trigger matching (lazy-load signature takes by user intent).
+# Pure C under the hood, ~1MB wheel, MIT license, no transitive deps.
+rapidfuzz==3.10.1
+
+# Test runner (dev only — used by backend/test_main.py).
+pytest==8.3.3
