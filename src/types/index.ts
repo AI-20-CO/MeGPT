@@ -7,9 +7,7 @@
  * @module types
  */
 
-// =============================================================================
 // THEME TYPES
-// =============================================================================
 
 /** Available theme modes */
 export type Theme = 'dark' | 'light';
@@ -38,9 +36,7 @@ export interface ThemeContextType {
   readonly colors: ThemeColors;
 }
 
-// =============================================================================
 // ANIMATION TYPES
-// =============================================================================
 
 /** Supported animation directions for section transitions */
 export type AnimationDirection = 'left' | 'right' | 'top' | 'bottom' | 'center';

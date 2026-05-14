@@ -10,9 +10,7 @@
 import type { Variants } from 'framer-motion';
 import type { AnimationDirection } from '@/types';
 
-// =============================================================================
 // ANIMATION CONFIGURATION
-// =============================================================================
 
 /**
  * Global animation timing constants
@@ -39,9 +37,7 @@ export const ANIMATION_CONFIG = {
   },
 } as const;
 
-// =============================================================================
 // FRAMER MOTION VARIANTS
-// =============================================================================
 
 /**
  * Creates symmetrical animation variants for section transitions
@@ -118,9 +114,7 @@ export const containerVariants: Variants = {
   },
 };
 
-// =============================================================================
 // SECTION VIEWPORT ANIMATIONS
-// =============================================================================
 
 /**
  * Section animation variants for scroll-triggered fade/slide effects
