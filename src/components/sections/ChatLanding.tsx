@@ -196,6 +196,86 @@ export default function ChatLanding({ onEnterPortfolio }: ChatLandingProps) {
         }}
       />
 
+      {/* Link to new portfolio site */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 'clamp(16px, 3.5vw, 32px)',
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+          zIndex: 10,
+          padding: '0 16px',
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+          style={{
+            pointerEvents: 'auto',
+            width: 'max-content',
+            maxWidth: 'min(92vw, 480px)',
+          }}
+        >
+          <a
+            href="https://code-folio-one.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '16px 32px',
+              background: 'transparent',
+              color: colors.textMuted,
+              textDecoration: 'none',
+              fontFamily: 'var(--font-syncopate), sans-serif',
+              fontSize: '11px',
+              fontWeight: 400,
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              opacity: 0.5,
+              transition: 'opacity 0.2s ease',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+          >
+            <motion.svg
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </motion.svg>
+            <span>
+              <span className="banner-text-full">Visit my new portfolio</span>
+              <span className="banner-text-short">New portfolio</span>
+            </span>
+          </a>
+        </motion.div>
+      </div>
+
+      <style jsx>{`
+        .banner-text-short { display: none; }
+        @media (max-width: 480px) {
+          .banner-text-full { display: none; }
+          .banner-text-short { display: inline; }
+        }
+      `}</style>
+
       {/* Main content */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -538,15 +618,19 @@ export default function ChatLanding({ onEnterPortfolio }: ChatLandingProps) {
 
       </motion.div>
 
-      {/* Explore Portfolio button - Outside main wrapper for reliable clicks */}
+      {/* Explore Portfolio button - Anchored near the bottom of the section */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
-        style={{ 
-          marginTop: hasMessages ? '24px' : '50px',
+        style={{
+          position: 'absolute',
+          bottom: 'clamp(48px, 8vh, 96px)',
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center',
           textAlign: 'center',
-          position: 'relative',
           zIndex: 100,
         }}
       >
